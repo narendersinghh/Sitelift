@@ -1,0 +1,6 @@
+{
+  "name": "Sitelift - Personal SEO Monitoring & Reporting",
+  "description": "Self-hosted personal SEO monitoring, GA4/GSC analysis, Bright Data rank tracking, declining pages diagnosis, automated activity planning, and monthly reporting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
