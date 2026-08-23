@@ -124,55 +124,55 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
     <div className="space-y-6">
       
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-          <Settings className="w-5 h-5 text-indigo-400" />
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <Settings className="w-5 h-5 text-blue-600" />
           Application & System Settings
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-slate-500 mt-1">
           Configure Google OAuth credentials, Bright Data SERP scraper keys, AI generation models, cron tokens, and database retention policies.
         </p>
       </div>
 
       {savedMessage && (
-        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-xs text-emerald-300 flex items-center gap-2 backdrop-blur-md">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>{savedMessage}</span>
+        <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-800 flex items-center gap-2 shadow-xs">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+          <span className="font-semibold">{savedMessage}</span>
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
         
         {/* Section 1: AI Tool API Configuration (Strictly Task Planning & Report Summaries) */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 backdrop-blur-md shadow-xl">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Bot className="w-4 h-4 text-indigo-400" />
-              <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+              <Bot className="w-4 h-4 text-purple-600" />
+              <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 AI Tool API Configuration (Task Planning & Executive Reports)
               </h2>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
-              <span className="text-xs text-slate-300 font-medium">{aiEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span className="text-xs text-slate-700 font-bold">{aiEnabled ? 'Enabled' : 'Disabled'}</span>
               <input
                 type="checkbox"
                 checked={aiEnabled}
                 onChange={e => setAiEnabled(e.target.checked)}
-                className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-white/10 border-white/20"
+                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
               />
             </label>
           </div>
 
-          <div className="p-3.5 bg-indigo-950/30 border border-indigo-500/30 rounded-xl flex items-start gap-2.5 text-xs text-slate-300">
-            <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+          <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2.5 text-xs text-slate-700">
+            <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed text-[11px]">
-              <strong className="text-white">Strict Boundary:</strong> This AI tool is utilized <em>solely</em> for generating creative SEO task action items in the Monthly Activity Planner and synthesizing executive report narratives. All core traffic analytics, impressions, CTR, SERP positions, and diagnostics remain 100% fetched directly from GA4, GSC, and Rank tracking APIs.
+              <strong className="text-slate-900">Strict Boundary:</strong> This AI tool is utilized <em>solely</em> for generating creative SEO task action items in the Monthly Activity Planner and synthesizing executive report narratives. All core traffic analytics, impressions, CTR, SERP positions, and diagnostics remain 100% fetched directly from GA4, GSC, and Rank tracking APIs.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">AI Provider</label>
+              <label className="block text-slate-700 font-bold mb-1">AI Provider</label>
               <select
                 value={aiProvider}
                 onChange={e => {
@@ -182,7 +182,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
                   else if (p === 'openai') setAiModel('gpt-4o-mini');
                   else if (p === 'anthropic') setAiModel('claude-3-5-sonnet');
                 }}
-                className="w-full px-3.5 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
               >
                 <option value="gemini">Google Gemini API (Recommended)</option>
                 <option value="openai">OpenAI (ChatGPT / GPT-4o)</option>
@@ -192,30 +192,30 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Model Identifier</label>
+              <label className="block text-slate-700 font-bold mb-1">Model Identifier</label>
               <input
                 type="text"
                 value={aiModel}
                 onChange={e => setAiModel(e.target.value)}
                 placeholder="e.g. gemini-2.5-flash or gpt-4o-mini"
-                className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none font-mono"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">AI API Key / Access Token</label>
+              <label className="block text-slate-700 font-bold mb-1">AI API Key / Access Token</label>
               <div className="relative">
                 <input
                   type={showApiKey ? 'text' : 'password'}
                   value={aiApiKey}
                   onChange={e => setAiApiKey(e.target.value)}
                   placeholder="AIzaSy... or sk-..."
-                  className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono focus:border-indigo-400 focus:outline-none pr-10"
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono focus:bg-white focus:border-blue-500 focus:outline-none pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowApiKey(!showApiKey)}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
                 >
                   {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
@@ -223,43 +223,43 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Custom API Base URL (Optional)</label>
+              <label className="block text-slate-700 font-bold mb-1">Custom API Base URL (Optional)</label>
               <input
                 type="text"
                 value={aiEndpoint}
                 onChange={e => setAiEndpoint(e.target.value)}
                 placeholder="https://api.openai.com/v1/chat/completions"
-                className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono focus:border-indigo-400 focus:outline-none"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono focus:bg-white focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
         </div>
 
         {/* Section 2: General & Cron Execution Security */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 backdrop-blur-md shadow-xl">
-          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-            <Sliders className="w-4 h-4 text-indigo-400" />
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+          <div className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+            <Sliders className="w-4 h-4 text-blue-600" />
             General & Cron Execution Security
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Application Name</label>
+              <label className="block text-slate-700 font-bold mb-1">Application Name</label>
               <input
                 type="text"
                 value={appName}
                 onChange={e => setAppName(e.target.value)}
-                className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none backdrop-blur-md"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none font-medium"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Global System Timezone</label>
+              <label className="block text-slate-700 font-bold mb-1">Global System Timezone</label>
               <select
                 value={timezone}
                 onChange={e => setTimezone(e.target.value)}
-                className="w-full px-3.5 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
               >
                 <optgroup label="Universal">
                   <option value="UTC">UTC (Coordinated Universal Time)</option>
@@ -329,7 +329,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
 
           {/* Cron Secret Token */}
           <div className="pt-2">
-            <label className="block text-slate-300 font-medium text-xs mb-1">
+            <label className="block text-slate-700 font-bold text-xs mb-1">
               Secret Cron Execution Token (Protects HTTP / CLI Cron Runner)
             </label>
             <div className="flex gap-2">
@@ -337,146 +337,157 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
                 type="text"
                 value={cronSecretToken}
                 onChange={e => setCronSecretToken(e.target.value)}
-                className="flex-1 px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white font-mono backdrop-blur-md"
+                className="flex-1 px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-mono focus:bg-white focus:border-blue-500 focus:outline-none"
                 required
               />
               <button
                 type="button"
                 onClick={handleCopyCronToken}
-                className="px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs text-slate-200 flex items-center gap-1.5 backdrop-blur-md transition-all"
+                className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl text-xs text-slate-700 font-bold flex items-center gap-1.5 transition-all shadow-xs"
                 title="Copy token"
               >
-                <Copy className="w-3.5 h-3.5 text-indigo-400" />
+                <Copy className="w-3.5 h-3.5 text-blue-600" />
                 <span>{copiedToken ? 'Copied' : 'Copy'}</span>
               </button>
               <button
                 type="button"
                 onClick={handleGenerateNewToken}
-                className="px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs text-indigo-300 flex items-center gap-1.5 backdrop-blur-md transition-all"
+                className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-xs text-blue-800 font-bold flex items-center gap-1.5 transition-all shadow-xs"
                 title="Generate new random token"
               >
-                <RefreshCw className="w-3.5 h-3.5 text-indigo-400" />
+                <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
                 <span>Generate</span>
               </button>
             </div>
             <span className="text-[11px] text-slate-500 mt-1.5 block">
-              cPanel cron command: <code className="text-indigo-400 font-mono">php /path/to/sitelift/cron.php token={cronSecretToken}</code>
+              cPanel cron command: <code className="text-blue-700 font-mono font-bold">php /path/to/sitelift/cron.php token={cronSecretToken}</code>
             </span>
           </div>
         </div>
 
         {/* Section 3: External API Credentials */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 backdrop-blur-md shadow-xl">
-          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-            <Key className="w-4 h-4 text-indigo-400" />
-            API & Scraping Credentials
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+          <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+            <Key className="w-4 h-4 text-emerald-600" />
+            API & Keyword Tracking Credentials
+          </div>
+
+          {/* Google OAuth Explanation Card */}
+          <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-xl space-y-1.5 text-xs text-slate-700">
+            <div className="font-bold text-blue-900 flex items-center gap-1.5 text-xs">
+              <Info className="w-4 h-4 text-blue-600 shrink-0" />
+              <span>How Google OAuth Connects Your Projects</span>
+            </div>
+            <p className="leading-relaxed text-xs text-slate-700">
+              The <strong>Google OAuth Client ID & Secret</strong> are configured globally once. This authorizes Sitelift to securely communicate with the Google Search Console and Google Analytics (GA4) APIs. After saving these credentials, you can connect each individual website in your portfolio to its specific GSC property and GA4 measurement property with 1-click under the <strong>Connections</strong> tab.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Google OAuth Client ID</label>
+              <label className="block text-slate-700 font-bold mb-1">Google OAuth Client ID</label>
               <input
                 type="text"
                 placeholder="123456789-abcdefg.apps.googleusercontent.com"
                 value={googleClientId}
                 onChange={e => setGoogleClientId(e.target.value)}
-                className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono backdrop-blur-md"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-xs focus:bg-white focus:border-blue-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Google OAuth Client Secret</label>
+              <label className="block text-slate-700 font-bold mb-1">Google OAuth Client Secret</label>
               <input
                 type="password"
                 placeholder="GOCSPX-************************"
                 value={googleClientSecret}
                 onChange={e => setGoogleClientSecret(e.target.value)}
-                className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono backdrop-blur-md"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-xs focus:bg-white focus:border-blue-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Bright Data API Token / Bearer Key</label>
+              <label className="block text-slate-700 font-bold mb-1">Keyword Tracking API Token (Bright Data / SERP Provider)</label>
               <input
                 type="password"
                 placeholder="bdt_api_************************"
                 value={brightDataApiToken}
                 onChange={e => setBrightDataApiToken(e.target.value)}
-                className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono backdrop-blur-md"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-xs focus:bg-white focus:border-blue-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Bright Data SERP Zone Identifier</label>
+              <label className="block text-slate-700 font-bold mb-1">Keyword Tracking Zone Identifier</label>
               <input
                 type="text"
                 placeholder="serp_api1"
                 value={brightDataZone}
                 onChange={e => setBrightDataZone(e.target.value)}
-                className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono backdrop-blur-md"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-xs focus:bg-white focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
         </div>
 
         {/* Section 4: Data Retention Controls */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 backdrop-blur-md shadow-xl">
-          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-            <Database className="w-4 h-4 text-indigo-400" />
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+          <div className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+            <Database className="w-4 h-4 text-amber-600" />
             MySQL Storage & Data Retention Automation
           </div>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-600">
             Keep shared hosting database footprint compact. The daily cron job purges granular records older than these limits while preserving monthly report snapshots.
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div className="p-3.5 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-              <label className="block text-slate-400 mb-1 font-medium">Daily Page Metrics</label>
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+              <label className="block text-slate-600 mb-1 font-bold">Daily Page Metrics</label>
               <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   value={dailyMetricsDays}
                   onChange={e => setDailyMetricsDays(Number(e.target.value))}
-                  className="w-full px-2.5 py-1.5 bg-[#0f172a]/80 border border-white/10 rounded-lg text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-bold"
                 />
                 <span className="text-slate-500 font-medium">days</span>
               </div>
             </div>
 
-            <div className="p-3.5 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-              <label className="block text-slate-400 mb-1 font-medium">GSC Search Queries</label>
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+              <label className="block text-slate-600 mb-1 font-bold">GSC Search Queries</label>
               <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   value={gscQueryDays}
                   onChange={e => setGscQueryDays(Number(e.target.value))}
-                  className="w-full px-2.5 py-1.5 bg-[#0f172a]/80 border border-white/10 rounded-lg text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-bold"
                 />
                 <span className="text-slate-500 font-medium">days</span>
               </div>
             </div>
 
-            <div className="p-3.5 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-              <label className="block text-slate-400 mb-1 font-medium">SERP Rank History</label>
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+              <label className="block text-slate-600 mb-1 font-bold">SERP Rank History</label>
               <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   value={rankSnapshotDays}
                   onChange={e => setRankSnapshotDays(Number(e.target.value))}
-                  className="w-full px-2.5 py-1.5 bg-[#0f172a]/80 border border-white/10 rounded-lg text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-bold"
                 />
                 <span className="text-slate-500 font-medium">days</span>
               </div>
             </div>
 
-            <div className="p-3.5 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-              <label className="block text-slate-400 mb-1 font-medium">Sync & Cron Logs</label>
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+              <label className="block text-slate-600 mb-1 font-bold">Sync & Cron Logs</label>
               <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   value={syncLogsDays}
                   onChange={e => setSyncLogsDays(Number(e.target.value))}
-                  className="w-full px-2.5 py-1.5 bg-[#0f172a]/80 border border-white/10 rounded-lg text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-bold"
                 />
                 <span className="text-slate-500 font-medium">days</span>
               </div>
@@ -489,7 +500,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
           <button
             type="button"
             onClick={() => setShowResetModal(true)}
-            className="px-4 py-2 bg-white/5 hover:bg-rose-500/20 border border-white/10 hover:border-rose-500/30 text-slate-400 hover:text-rose-300 rounded-xl text-xs font-semibold backdrop-blur-md transition-all flex items-center gap-1.5"
+            className="px-4 py-2 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-slate-600 hover:text-rose-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>Reset Demo DB</span>
@@ -497,7 +508,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
 
           <button
             type="submit"
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 backdrop-blur-md transition-all"
+            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all"
           >
             Save All Settings
           </button>
@@ -507,27 +518,27 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
 
       {/* Reset Database Confirmation Modal */}
       {showResetModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-[#0f172a]/95 border border-white/15 backdrop-blur-2xl rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 shadow-xl space-y-4">
+            <h3 className="text-sm font-bold text-rose-700 uppercase tracking-wider flex items-center gap-2">
               <Trash2 className="w-4 h-4" />
               Reset All Data to Defaults?
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               This will restore all default metrics, decline history, tracked keywords, and activity logs. Any custom changes will be reset.
             </p>
-            <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setShowResetModal(false)}
-                className="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={confirmReset}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-rose-600/30 transition-all"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all"
               >
                 Reset Database
               </button>

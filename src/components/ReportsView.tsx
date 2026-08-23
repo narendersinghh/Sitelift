@@ -169,35 +169,35 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
     <div className="space-y-6">
       
       {/* Full Width Header with Action Controls Below */}
-      <div className="space-y-3">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
         <div className="w-full">
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-400" />
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <FileText className="w-5 h-5 text-blue-600" />
             Monthly SEO Reports & Snapshots
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Generate client-ready monthly executive summaries, keyword movement matrices, and action plan snapshots.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap pt-1">
+        <div className="flex items-center gap-2.5 flex-wrap pt-2 border-t border-slate-100">
           {activeReport && (
             <>
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-semibold text-slate-200 backdrop-blur-md transition-all"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 shadow-xs transition-all"
                 title="Print or Save as PDF"
               >
-                <Printer className="w-3.5 h-3.5 text-indigo-400" />
+                <Printer className="w-3.5 h-3.5 text-blue-600" />
                 <span>Print / PDF</span>
               </button>
 
               <button
                 onClick={handleExportHtml}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-semibold text-slate-200 backdrop-blur-md transition-all"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 shadow-xs transition-all"
                 title="Export Standalone HTML Report"
               >
-                <Download className="w-3.5 h-3.5 text-indigo-400" />
+                <Download className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Export HTML</span>
               </button>
             </>
@@ -205,7 +205,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
 
           <button
             onClick={() => setShowGenerateModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-semibold text-white shadow-lg shadow-indigo-600/20 backdrop-blur-md transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-xs font-bold text-white shadow-xs transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Generate New Report</span>
@@ -217,14 +217,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         {/* Left Column: Report Archive Snapshots */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3 backdrop-blur-md shadow-xl">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
+          <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             Archived Report Snapshots ({reports.length})
           </div>
 
           <div className="space-y-2">
             {reports.length === 0 ? (
-              <div className="text-xs text-slate-500 p-4 text-center">No reports generated yet.</div>
+              <div className="text-xs text-slate-400 p-4 text-center">No reports generated yet.</div>
             ) : (
               reports.map(rep => (
                 <div
@@ -232,14 +232,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
                   onClick={() => setActiveReport(rep)}
                   className={`p-3.5 rounded-xl border cursor-pointer transition-all text-xs flex items-center justify-between gap-2 ${
                     activeReport?.id === rep.id
-                      ? 'bg-indigo-600/20 border-indigo-500/40 shadow-lg text-white backdrop-blur-md'
-                      : 'bg-white/5 border-white/5 hover:bg-white/10 text-slate-300'
+                      ? 'bg-blue-50 border-blue-300 shadow-xs text-blue-900 font-bold'
+                      : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
                   }`}
                 >
                   <div className="space-y-0.5 truncate">
-                    <div className="font-semibold text-slate-100 truncate">{rep.title}</div>
-                    <div className="text-[10px] text-slate-400">
-                      Month: <span className="font-medium text-indigo-400">{rep.month}</span> • {new Date(rep.createdAt).toLocaleDateString()}
+                    <div className="font-bold text-slate-900 truncate">{rep.title}</div>
+                    <div className="text-[10px] text-slate-500">
+                      Month: <span className="font-bold text-blue-700">{rep.month}</span> • {new Date(rep.createdAt).toLocaleDateString()}
                     </div>
                   </div>
 
@@ -248,7 +248,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
                       e.stopPropagation();
                       handleDeleteReport(rep.id);
                     }}
-                    className="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg hover:bg-white/5 transition-colors shrink-0"
+                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-white transition-colors shrink-0"
                     title="Delete snapshot"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -262,32 +262,32 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
         {/* Right Column: Full-Screen Report Viewer */}
         <div className="lg:col-span-3">
           {activeReport ? (
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8 backdrop-blur-md shadow-2xl print:bg-white print:text-black print:p-0 print:border-none">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-8 shadow-xs print:bg-white print:text-black print:p-0 print:border-none">
               
               {/* Report Header */}
-              <div className="border-b border-white/10 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="border-b border-slate-200 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
+                  <div className="text-xs font-bold text-blue-600 uppercase tracking-wider">
                     {activeReport.config.agencyName || 'Sitelift SEO Intelligence'}
                   </div>
-                  <h2 className="text-2xl font-bold text-white tracking-tight mt-1">{activeReport.title}</h2>
-                  <div className="text-xs text-slate-400 mt-1 flex items-center gap-2">
-                    <span>Target: <strong className="text-slate-200">{website.domain}</strong></span>
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1">{activeReport.title}</h2>
+                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                    <span>Target: <strong className="text-slate-800">{website.domain}</strong></span>
                     <span>•</span>
-                    <span>Client: <strong className="text-slate-200">{activeReport.config.clientName}</strong></span>
+                    <span>Client: <strong className="text-slate-800">{activeReport.config.clientName}</strong></span>
                     <span>•</span>
                     <span>Generated: {new Date(activeReport.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
 
-                <div className="p-2 px-3.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-xs text-emerald-300 backdrop-blur-md">
-                  Snapshot Locked <span className="text-emerald-400 font-bold ml-1">✓</span>
+                <div className="p-2 px-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs font-bold text-emerald-800 shadow-xs">
+                  Snapshot Locked <span className="text-emerald-600 font-bold ml-1">✓</span>
                 </div>
               </div>
 
               {/* Custom Intro */}
               {activeReport.config.customIntro && (
-                <div className="p-4 bg-white/5 border border-white/10 rounded-xl text-xs text-slate-300 leading-relaxed backdrop-blur-md">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 leading-relaxed">
                   {activeReport.config.customIntro}
                 </div>
               )}
@@ -295,47 +295,47 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
               {/* Executive Summary Cards */}
               {activeReport.config.sections.executiveSummary && (
                 <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Executive Summary</h3>
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">1. Executive Summary</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-                      <div className="text-[11px] font-medium text-slate-400 uppercase">Total Sessions</div>
-                      <div className="text-xl font-bold text-white mt-1">
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl shadow-xs">
+                      <div className="text-[11px] font-bold text-slate-500 uppercase">Total Sessions</div>
+                      <div className="text-2xl font-bold text-slate-900 mt-1">
                         {activeReport.snapshotData.executiveSummary.totalSessions.toLocaleString()}
                       </div>
-                      <div className="text-xs text-emerald-400 font-medium mt-1">
+                      <div className="text-xs text-emerald-700 font-bold mt-1">
                         +{activeReport.snapshotData.executiveSummary.sessionsGrowthMoM}% MoM
                       </div>
                     </div>
 
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-                      <div className="text-[11px] font-medium text-slate-400 uppercase">Organic Clicks</div>
-                      <div className="text-xl font-bold text-white mt-1">
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl shadow-xs">
+                      <div className="text-[11px] font-bold text-slate-500 uppercase">Organic Clicks</div>
+                      <div className="text-2xl font-bold text-slate-900 mt-1">
                         {activeReport.snapshotData.executiveSummary.organicClicks.toLocaleString()}
                       </div>
-                      <div className="text-xs text-emerald-400 font-medium mt-1">
+                      <div className="text-xs text-emerald-700 font-bold mt-1">
                         +{activeReport.snapshotData.executiveSummary.clicksGrowthMoM}% MoM
                       </div>
                     </div>
 
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-                      <div className="text-[11px] font-medium text-slate-400 uppercase">Top 3 Rankings</div>
-                      <div className="text-xl font-bold text-indigo-400 mt-1">
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl shadow-xs">
+                      <div className="text-[11px] font-bold text-slate-500 uppercase">Top 3 Rankings</div>
+                      <div className="text-2xl font-bold text-blue-700 mt-1">
                         {activeReport.snapshotData.executiveSummary.topKeywordCount}
                       </div>
-                      <div className="text-xs text-slate-400 mt-1">High Intent Terms</div>
+                      <div className="text-xs text-slate-500 mt-1 font-semibold">High Intent Terms</div>
                     </div>
 
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
-                      <div className="text-[11px] font-medium text-slate-400 uppercase">Completed Tasks</div>
-                      <div className="text-xl font-bold text-emerald-400 mt-1">
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl shadow-xs">
+                      <div className="text-[11px] font-bold text-slate-500 uppercase">Completed Tasks</div>
+                      <div className="text-2xl font-bold text-purple-700 mt-1">
                         {activeReport.snapshotData.executiveSummary.completedTasksCount}
                       </div>
-                      <div className="text-xs text-slate-400 mt-1">SEO Sprints Done</div>
+                      <div className="text-xs text-slate-500 mt-1 font-semibold">SEO Sprints Done</div>
                     </div>
                   </div>
 
-                  <div className="p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-xs text-indigo-300 backdrop-blur-md">
-                    <strong>Monthly Highlight:</strong> {activeReport.snapshotData.executiveSummary.keyHighlight}
+                  <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900">
+                    <strong className="text-blue-950">Monthly Highlight:</strong> {activeReport.snapshotData.executiveSummary.keyHighlight}
                   </div>
                 </div>
               )}
@@ -343,10 +343,10 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
               {/* Top Declining Pages Requiring Attention */}
               {activeReport.config.sections.decliningPages && (
                 <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">2. Declining Pages & Mitigation</h3>
-                  <div className="border border-white/10 rounded-xl overflow-hidden backdrop-blur-md">
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">2. Declining Pages & Mitigation</h3>
+                  <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-white/5 text-slate-400 font-medium">
+                      <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
                         <tr>
                           <th className="py-2.5 px-3">Page Path</th>
                           <th className="py-2.5 px-3">Category</th>
@@ -354,13 +354,13 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
                           <th className="py-2.5 px-3 text-right">Current Traffic</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5 bg-transparent">
+                      <tbody className="divide-y divide-slate-100 bg-white">
                         {activeReport.snapshotData.decliningPages.map((p, idx) => (
-                          <tr key={idx}>
-                            <td className="py-2.5 px-3 font-semibold text-slate-200">{p.path}</td>
-                            <td className="py-2.5 px-3 text-slate-400">{p.category}</td>
-                            <td className="py-2.5 px-3 text-right font-bold text-rose-400">-{p.sessionLoss.toLocaleString()}</td>
-                            <td className="py-2.5 px-3 text-right text-slate-300">{p.currentSessions.toLocaleString()}</td>
+                          <tr key={idx} className="hover:bg-slate-50">
+                            <td className="py-2.5 px-3 font-bold text-slate-900">{p.path}</td>
+                            <td className="py-2.5 px-3 text-indigo-700 font-semibold">{p.category}</td>
+                            <td className="py-2.5 px-3 text-right font-bold text-rose-700">-{p.sessionLoss.toLocaleString()}</td>
+                            <td className="py-2.5 px-3 text-right text-slate-700 font-mono">{p.currentSessions.toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -372,24 +372,24 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
               {/* Keyword Summary & Movements */}
               {activeReport.config.sections.keywordMovement && (
                 <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">3. Keyword Rankings & Movement</h3>
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">3. Keyword Rankings & Movement</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl text-xs space-y-2 backdrop-blur-md">
-                      <div className="font-semibold text-slate-200">Tracked SERP Distribution</div>
-                      <div className="text-slate-400">
-                        Total tracked: <strong className="text-white">{activeReport.snapshotData.keywordSummary.trackedTotal}</strong> •
-                        Top 3: <strong className="text-indigo-400">{activeReport.snapshotData.keywordSummary.top3Count}</strong> •
-                        Top 10: <strong className="text-emerald-400">{activeReport.snapshotData.keywordSummary.top10Count}</strong>
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-2 shadow-xs">
+                      <div className="font-bold text-slate-900">Tracked SERP Distribution</div>
+                      <div className="text-slate-600">
+                        Total tracked: <strong className="text-slate-900">{activeReport.snapshotData.keywordSummary.trackedTotal}</strong> •
+                        Top 3: <strong className="text-blue-700 font-bold">{activeReport.snapshotData.keywordSummary.top3Count}</strong> •
+                        Top 10: <strong className="text-emerald-700 font-bold">{activeReport.snapshotData.keywordSummary.top10Count}</strong>
                       </div>
                     </div>
 
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl text-xs space-y-2 backdrop-blur-md">
-                      <div className="font-semibold text-slate-200">Top Keyword Movements</div>
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-2 shadow-xs">
+                      <div className="font-bold text-slate-900">Top Keyword Movements</div>
                       <div className="space-y-1">
                         {activeReport.snapshotData.keywordSummary.topMovements.map((m, idx) => (
                           <div key={idx} className="flex items-center justify-between text-[11px]">
-                            <span className="text-slate-300 truncate max-w-[200px]">{m.keyword}</span>
-                            <span className={m.change > 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                            <span className="text-slate-700 font-semibold truncate max-w-[200px]">{m.keyword}</span>
+                            <span className={m.change > 0 ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold'}>
                               #{m.oldRank} &rarr; #{m.newRank} ({m.change > 0 ? `+${m.change}` : m.change})
                             </span>
                           </div>
@@ -404,16 +404,16 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {activeReport.config.sections.completedActivities && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">4. Activities Completed</h3>
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">4. Activities Completed</h3>
                     <div className="space-y-2">
                       {activeReport.snapshotData.completedActivities.map((act, idx) => (
-                        <div key={idx} className="p-3.5 bg-white/5 border border-emerald-500/20 rounded-xl text-xs backdrop-blur-md">
-                          <div className="font-semibold text-slate-200 flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <div key={idx} className="p-3.5 bg-emerald-50/60 border border-emerald-200 rounded-xl text-xs shadow-xs">
+                          <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                             <span>{act.title}</span>
                           </div>
-                          <div className="text-[10px] text-slate-400 mt-1">
-                            Completed on {act.completedDate} • Impact: <strong className="text-slate-300 uppercase">{act.impact}</strong>
+                          <div className="text-[10px] text-slate-500 mt-1">
+                            Completed on {act.completedDate} • Impact: <strong className="text-emerald-800 uppercase font-bold">{act.impact}</strong>
                           </div>
                         </div>
                       ))}
@@ -423,12 +423,12 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
 
                 {activeReport.config.sections.nextMonthPlan && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">5. Next Month Planned Sprint</h3>
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">5. Next Month Planned Sprint</h3>
                     <div className="space-y-2">
                       {activeReport.snapshotData.nextMonthPlan.map((plan, idx) => (
-                        <div key={idx} className="p-3.5 bg-white/5 border border-white/10 rounded-xl text-xs backdrop-blur-md">
-                          <div className="font-semibold text-slate-200">{plan.title}</div>
-                          <div className="text-[10px] text-indigo-400 mt-1 font-medium">
+                        <div key={idx} className="p-3.5 bg-blue-50/60 border border-blue-200 rounded-xl text-xs shadow-xs">
+                          <div className="font-bold text-slate-900">{plan.title}</div>
+                          <div className="text-[10px] text-blue-700 mt-1 font-semibold">
                             Priority: {plan.priority} • Expected Impact: {plan.impact}
                           </div>
                         </div>
@@ -439,13 +439,13 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
               </div>
 
               {/* Footer */}
-              <div className="pt-6 border-t border-white/10 text-center text-xs text-slate-500">
+              <div className="pt-6 border-t border-slate-200 text-center text-xs text-slate-400">
                 {activeReport.config.footerText}
               </div>
 
             </div>
           ) : (
-            <div className="p-12 bg-white/5 border border-white/10 rounded-2xl text-center text-xs text-slate-400 backdrop-blur-md">
+            <div className="p-12 bg-white border border-slate-200 rounded-2xl text-center text-xs text-slate-500 shadow-xs">
               Select or generate a report snapshot.
             </div>
           )}
@@ -455,21 +455,21 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
 
       {/* Generate Report Modal */}
       {showGenerateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-[#0f172a]/95 border border-white/15 backdrop-blur-2xl rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <FileText className="w-4 h-4 text-indigo-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <FileText className="w-4 h-4 text-blue-600" />
               Generate Monthly Report Snapshot
             </h3>
 
             <form onSubmit={handleGenerate} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Target Month</label>
+                  <label className="block text-slate-700 font-bold mb-1">Target Month</label>
                   <select
                     value={targetMonth}
                     onChange={e => setTargetMonth(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-700 font-semibold focus:border-blue-500 focus:outline-none"
                   >
                     <option value="2026-08">August 2026</option>
                     <option value="2026-07">July 2026</option>
@@ -478,59 +478,59 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Brand Accent Color</label>
+                  <label className="block text-slate-700 font-bold mb-1">Brand Accent Color</label>
                   <input
                     type="color"
                     value={brandColor}
                     onChange={e => setBrandColor(e.target.value)}
-                    className="w-full h-9 bg-white/5 border border-white/10 rounded-xl cursor-pointer"
+                    className="w-full h-9 bg-slate-50 border border-slate-300 rounded-xl cursor-pointer"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Agency / Creator Name</label>
+                  <label className="block text-slate-700 font-bold mb-1">Agency / Creator Name</label>
                   <input
                     type="text"
                     value={agencyName}
                     onChange={e => setAgencyName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white backdrop-blur-md"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Client / Stakeholder Name</label>
+                  <label className="block text-slate-700 font-bold mb-1">Client / Stakeholder Name</label>
                   <input
                     type="text"
                     value={clientName}
                     onChange={e => setClientName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white backdrop-blur-md"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Custom Introduction</label>
+                <label className="block text-slate-700 font-bold mb-1">Custom Introduction</label>
                 <textarea
                   value={customIntro}
                   onChange={e => setCustomIntro(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white backdrop-blur-md"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900"
                 />
               </div>
 
               {/* Section Checkboxes */}
               <div>
-                <label className="block text-slate-300 font-medium mb-1.5">Include Sections in Snapshot</label>
-                <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+                <label className="block text-slate-700 font-bold mb-1.5">Include Sections in Snapshot</label>
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-700">
                   {Object.entries(sections).map(([k, val]) => (
-                    <label key={k} className="flex items-center gap-2 cursor-pointer p-1.5 rounded-lg hover:bg-white/5">
+                    <label key={k} className="flex items-center gap-2 cursor-pointer p-1.5 rounded-lg hover:bg-slate-50">
                       <input
                         type="checkbox"
                         checked={val}
                         onChange={e => setSections({ ...sections, [k]: e.target.checked })}
-                        className="rounded bg-white/10 border-white/20 text-indigo-600 accent-indigo-500"
+                        className="rounded border-slate-300 text-blue-600 accent-blue-600"
                       />
                       <span className="capitalize">{k.replace(/([A-Z])/g, ' $1')}</span>
                     </label>
@@ -538,18 +538,18 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ website }) => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowGenerateModal(false)}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 rounded-xl font-medium transition-colors"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isGenerating}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-xs transition-all"
                 >
                   {isGenerating ? 'Compiling Snapshot...' : 'Generate Snapshot'}
                 </button>

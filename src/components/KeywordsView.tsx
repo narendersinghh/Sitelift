@@ -283,11 +283,11 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
       {/* Full Width Header with Action Controls Below */}
       <div className="space-y-3">
         <div className="w-full">
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <KeyRound className="w-5 h-5 text-indigo-400" />
-            Keyword Tracking (Bright Data SERP Engine)
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <KeyRound className="w-5 h-5 text-blue-600" />
+            Keyword Tracking
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Track organic SERP ranks with keyword-specific country geo-targets and device simulation (Mobile / Desktop).
           </p>
         </div>
@@ -297,8 +297,8 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
           <button
             onClick={handleRunRankCheck}
             disabled={isTracking || keywords.length === 0}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/20 backdrop-blur-md transition-all"
-            title="Execute on-demand SERP check via Bright Data"
+            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs transition-all"
+            title="Execute on-demand SERP check"
           >
             <Play className={`w-3.5 h-3.5 ${isTracking ? 'animate-spin' : ''}`} />
             <span>{isTracking ? `Checking SERP (${trackingProgress}%)...` : 'Run SERP Check'}</span>
@@ -306,17 +306,17 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
 
           <button
             onClick={() => setShowGscImportModal(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-amber-300 rounded-xl text-xs font-semibold backdrop-blur-md transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 rounded-xl text-xs font-bold shadow-xs transition-all"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
             <span>Import GSC</span>
           </button>
 
           <button
             onClick={() => setShowCsvModal(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 rounded-xl text-xs font-semibold backdrop-blur-md transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-all"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-slate-400" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
             <span>CSV Import</span>
           </button>
 
@@ -327,7 +327,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
               setNewDevice('mobile');
               setShowAddModal(true);
             }}
-            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-semibold text-white shadow-lg shadow-indigo-600/20 backdrop-blur-md transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-xs font-bold text-white shadow-xs transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Keyword</span>
@@ -335,81 +335,136 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
         </div>
       </div>
 
-      {/* Metric Cards (Clickable to Filter) */}
+      {/* Multi-Color Metric Cards (Clickable to Filter) */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div
           onClick={() => setRankTrendFilter('all')}
-          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-all cursor-pointer shadow-xs ${
             rankTrendFilter === 'all'
-              ? 'bg-indigo-600/20 border-indigo-500 shadow-md shadow-indigo-600/20'
-              : 'bg-white/5 border-white/10 hover:border-white/20'
+              ? 'bg-blue-100/70 border-blue-400 ring-2 ring-blue-400'
+              : 'bg-blue-50/60 border-blue-200 hover:bg-blue-100/50'
           }`}
         >
-          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Total Tracked</div>
-          <div className="text-xl font-bold text-white mt-1">{activeKeywords.length}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">All active keywords</div>
+          <div className="text-xs text-blue-800 font-bold uppercase tracking-wider">Total Tracked</div>
+          <div className="text-2xl font-extrabold text-blue-950 mt-1">{activeKeywords.length}</div>
+          <div className="text-xs text-blue-700/80 mt-0.5 font-medium">All active keywords</div>
         </div>
 
-        <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-          <div className="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider">Top 3 & Top 10</div>
-          <div className="text-xl font-bold text-white mt-1">
-            {top3} <span className="text-xs text-slate-400 font-normal">/ {top10}</span>
+        <div className="p-4 bg-purple-50/60 border border-purple-200 rounded-2xl shadow-xs">
+          <div className="text-xs text-purple-800 font-bold uppercase tracking-wider">Top 3 & Top 10</div>
+          <div className="text-2xl font-extrabold text-purple-950 mt-1">
+            {top3} <span className="text-xs text-purple-600 font-medium">/ {top10}</span>
           </div>
-          <div className="text-[10px] text-indigo-300 mt-0.5">Top 3 / Top 10 SERP</div>
+          <div className="text-xs text-purple-700/80 mt-0.5 font-medium">Top SERP tiers</div>
         </div>
 
         <div
           onClick={() => setRankTrendFilter(rankTrendFilter === 'improved' ? 'all' : 'improved')}
-          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-all cursor-pointer shadow-xs ${
             rankTrendFilter === 'improved'
-              ? 'bg-emerald-500/20 border-emerald-500 shadow-md shadow-emerald-500/20'
-              : 'bg-white/5 border-white/10 hover:border-emerald-500/40'
+              ? 'bg-emerald-100/80 border-emerald-500 ring-2 ring-emerald-400'
+              : 'bg-emerald-50/60 border-emerald-200 hover:bg-emerald-100/50'
           }`}
         >
-          <div className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+          <div className="text-xs text-emerald-800 font-bold uppercase tracking-wider flex items-center justify-between">
             <span>Improved (↑)</span>
-            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">Gains</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-200 text-emerald-900 font-bold">Gains</span>
           </div>
-          <div className="text-xl font-bold text-emerald-300 mt-1">+{rankGains}</div>
-          <div className="text-[10px] text-emerald-400/80 mt-0.5">Gained higher rank</div>
+          <div className="text-2xl font-extrabold text-emerald-900 mt-1">+{rankGains}</div>
+          <div className="text-xs text-emerald-700 mt-0.5 font-semibold">Gained higher rank</div>
         </div>
 
         <div
           onClick={() => setRankTrendFilter(rankTrendFilter === 'declined' ? 'all' : 'declined')}
-          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-all cursor-pointer shadow-xs ${
             rankTrendFilter === 'declined'
-              ? 'bg-rose-500/20 border-rose-500 shadow-md shadow-rose-500/20'
-              : 'bg-white/5 border-white/10 hover:border-rose-500/40'
+              ? 'bg-rose-100/80 border-rose-500 ring-2 ring-rose-400'
+              : 'bg-rose-50/60 border-rose-200 hover:bg-rose-100/50'
           }`}
         >
-          <div className="text-[10px] text-rose-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+          <div className="text-xs text-rose-800 font-bold uppercase tracking-wider flex items-center justify-between">
             <span>Declined (↓)</span>
-            <span className="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300">Drops</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-rose-200 text-rose-900 font-bold">Drops</span>
           </div>
-          <div className="text-xl font-bold text-rose-300 mt-1">-{rankDrops}</div>
-          <div className="text-[10px] text-rose-400/80 mt-0.5">Dropped in SERP</div>
+          <div className="text-2xl font-extrabold text-rose-900 mt-1">-{rankDrops}</div>
+          <div className="text-xs text-rose-700 mt-0.5 font-semibold">Dropped in SERP</div>
         </div>
 
         <div
           onClick={() => setRankTrendFilter(rankTrendFilter === 'stable' ? 'all' : 'stable')}
-          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-all cursor-pointer shadow-xs ${
             rankTrendFilter === 'stable'
-              ? 'bg-cyan-500/20 border-cyan-500 shadow-md shadow-cyan-500/20'
-              : 'bg-white/5 border-white/10 hover:border-cyan-500/40'
+              ? 'bg-cyan-100/80 border-cyan-500 ring-2 ring-cyan-400'
+              : 'bg-cyan-50/60 border-cyan-200 hover:bg-cyan-100/50'
           }`}
         >
-          <div className="text-[10px] text-cyan-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+          <div className="text-xs text-cyan-800 font-bold uppercase tracking-wider flex items-center justify-between">
             <span>Stable (=)</span>
-            <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300">Neutral</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-200 text-cyan-900 font-bold">Neutral</span>
           </div>
-          <div className="text-xl font-bold text-cyan-300 mt-1">{rankStable}</div>
-          <div className="text-[10px] text-cyan-400/80 mt-0.5">Position unchanged</div>
+          <div className="text-2xl font-extrabold text-cyan-950 mt-1">{rankStable}</div>
+          <div className="text-xs text-cyan-700 mt-0.5 font-semibold">Position unchanged</div>
         </div>
       </div>
 
       {/* Filters Bar with Rank Movement Filter */}
-      <div className="p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-3">
+      <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-3">
+        {/* Multi-Colored Rank Movement Pills */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-100">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-slate-700">Rank Trend:</span>
+
+            <button
+              onClick={() => setRankTrendFilter('all')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                rankTrendFilter === 'all'
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200'
+              }`}
+            >
+              All Keywords ({activeKeywords.length})
+            </button>
+
+            <button
+              onClick={() => setRankTrendFilter('improved')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                rankTrendFilter === 'improved'
+                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs ring-2 ring-emerald-200'
+                  : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border-emerald-200'
+              }`}
+            >
+              ↑ Improved Gains ({rankGains})
+            </button>
+
+            <button
+              onClick={() => setRankTrendFilter('declined')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                rankTrendFilter === 'declined'
+                  ? 'bg-rose-600 text-white border-rose-700 shadow-xs ring-2 ring-rose-200'
+                  : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border-rose-200'
+              }`}
+            >
+              ↓ Declined Drops ({rankDrops})
+            </button>
+
+            <button
+              onClick={() => setRankTrendFilter('stable')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                rankTrendFilter === 'stable'
+                  ? 'bg-cyan-600 text-white border-cyan-700 shadow-xs ring-2 ring-cyan-200'
+                  : 'bg-cyan-50 text-cyan-800 hover:bg-cyan-100 border-cyan-200'
+              }`}
+            >
+              = Stable Positions ({rankStable})
+            </button>
+          </div>
+
+          <div className="text-xs font-bold text-slate-500">
+            Showing <span className="text-slate-900">{filteredKeywords.length}</span> results
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
           
           <div className="relative md:col-span-2">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -418,7 +473,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
               placeholder="Search tracked keywords..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 backdrop-blur-md"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white"
             />
           </div>
 
@@ -426,7 +481,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
             <select
               value={rankTrendFilter}
               onChange={e => setRankTrendFilter(e.target.value as any)}
-              className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs font-medium text-slate-200 focus:border-indigo-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none"
             >
               <option value="all">All Movements</option>
               <option value="improved">Improved (↑ Gains)</option>
@@ -439,7 +494,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
             <select
               value={deviceFilter}
               onChange={e => setDeviceFilter(e.target.value)}
-              className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs text-slate-300"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-700 font-medium"
             >
               <option value="all">All Devices</option>
               <option value="mobile">Mobile</option>
@@ -451,7 +506,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
             <select
               value={countryFilter}
               onChange={e => setCountryFilter(e.target.value)}
-              className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs text-slate-300"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-700 font-medium"
             >
               <option value="all">All Countries</option>
               <option value="IN">India (IN)</option>
@@ -470,7 +525,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
             <select
               value={categoryFilter}
               onChange={e => setCategoryFilter(e.target.value)}
-              className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs text-slate-300"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-700 font-medium"
             >
               <option value="all">All Categories</option>
               <option value="Commercial">Commercial</option>
@@ -484,7 +539,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
             <select
               value={brandFilter}
               onChange={e => setBrandFilter(e.target.value)}
-              className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs text-slate-300"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-700 font-medium"
             >
               <option value="all">All Intent</option>
               <option value="non_branded">Non-Brand</option>
@@ -496,19 +551,19 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
       </div>
 
       {/* Keywords Table */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         {filteredKeywords.length === 0 ? (
           <div className="p-12 text-center text-slate-400">
-            <KeyRound className="w-10 h-10 mx-auto text-slate-500 mb-3" />
-            <div className="text-sm font-semibold text-slate-200">No Keywords Match Filters</div>
-            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+            <KeyRound className="w-10 h-10 mx-auto text-slate-300 mb-3" />
+            <div className="text-sm font-semibold text-slate-800">No Keywords Match Filters</div>
+            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
               Add keywords manually, import from GSC queries, or upload a CSV file to monitor mobile/desktop SERP ranks.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-white/5 text-slate-400 border-b border-white/10 text-[10px] font-bold uppercase tracking-wider">
+              <thead className="bg-slate-100/70 text-slate-600 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider">
                 <tr>
                   <th className="py-3 px-4">Keyword & Target URL</th>
                   <th className="py-3 px-3">Device & Geo</th>
@@ -520,31 +575,31 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 bg-transparent">
+              <tbody className="divide-y divide-slate-100 bg-white">
                 {filteredKeywords.map(kw => {
                   const rankChange = kw.previousRank && kw.currentRank ? kw.previousRank - kw.currentRank : 0;
                   const isGain = rankChange > 0;
                   const isLoss = rankChange < 0;
 
                   return (
-                    <tr key={kw.id} className="hover:bg-white/5 transition-colors">
+                    <tr key={kw.id} className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-white">{kw.keyword}</span>
+                          <span className="font-bold text-slate-900">{kw.keyword}</span>
                           {kw.isBranded && (
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-800 border border-purple-200 font-bold">
                               Brand
                             </span>
                           )}
-                          <span className={`text-[9px] px-1.5 py-0.5 rounded capitalize ${
-                            kw.priority === 'critical' ? 'bg-rose-500/20 text-rose-300' :
-                            kw.priority === 'high' ? 'bg-amber-500/20 text-amber-300' :
-                            'bg-slate-700 text-slate-300'
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded capitalize font-semibold ${
+                            kw.priority === 'critical' ? 'bg-rose-100 text-rose-800 border border-rose-200' :
+                            kw.priority === 'high' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                            'bg-slate-100 text-slate-700 border border-slate-200'
                           }`}>
                             {kw.priority}
                           </span>
                         </div>
-                        <div className="text-[11px] text-slate-400 truncate max-w-xs mt-0.5 font-mono">
+                        <div className="text-[11px] text-slate-500 truncate max-w-xs mt-0.5 font-mono">
                           {kw.targetUrl.replace(/^https?:\/\/[^/]+/, '') || '/'}
                         </div>
                       </td>
@@ -552,52 +607,52 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-1.5">
                           {kw.device === 'mobile' || !kw.device ? (
-                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[10px] font-medium" title="Mobile Crawler">
-                              <Smartphone className="w-3 h-3" />
+                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-semibold" title="Mobile Crawler">
+                              <Smartphone className="w-3 h-3 text-blue-600" />
                               <span>Mobile</span>
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-300 border border-blue-500/20 text-[10px] font-medium" title="Desktop Crawler">
-                              <Monitor className="w-3 h-3" />
+                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-50 text-sky-800 border border-sky-200 text-[10px] font-semibold" title="Desktop Crawler">
+                              <Monitor className="w-3 h-3 text-sky-600" />
                               <span>Desktop</span>
                             </span>
                           )}
-                          <span className="text-[10px] px-2 py-0.5 rounded-lg bg-white/5 text-slate-300 border border-white/10 font-bold uppercase" title={getCountryName(kw.country)}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 font-bold uppercase" title={getCountryName(kw.country)}>
                             {kw.country || 'IN'}
                           </span>
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
-                        <span className="text-[11px] text-slate-300">{kw.category}</span>
+                        <span className="text-[11px] font-medium text-slate-700 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200">{kw.category}</span>
                       </td>
 
                       <td className="py-3 px-3 text-center">
                         {kw.currentRank ? (
-                          <span className={`font-bold text-sm ${
-                            kw.currentRank <= 3 ? 'text-emerald-400' : kw.currentRank <= 10 ? 'text-indigo-300' : 'text-slate-300'
+                          <span className={`font-extrabold text-sm ${
+                            kw.currentRank <= 3 ? 'text-emerald-700' : kw.currentRank <= 10 ? 'text-purple-700' : 'text-slate-800'
                           }`}>
                             #{kw.currentRank}
                           </span>
                         ) : (
-                          <span className="text-slate-500 font-mono">Unranked</span>
+                          <span className="text-slate-400 font-mono">Unranked</span>
                         )}
                       </td>
 
                       <td className="py-3 px-3 text-center">
                         {rankChange !== 0 ? (
-                          <span className={`inline-flex items-center gap-0.5 font-semibold text-xs ${
-                            isGain ? 'text-emerald-400' : 'text-rose-400'
+                          <span className={`inline-flex items-center gap-0.5 font-bold text-xs ${
+                            isGain ? 'text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded' : 'text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded'
                           }`}>
                             {isGain ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                             {isGain ? `+${rankChange}` : rankChange}
                           </span>
                         ) : (
-                          <span className="text-slate-500">—</span>
+                          <span className="text-slate-400">—</span>
                         )}
                       </td>
 
-                      <td className="py-3 px-3 text-center text-slate-400 font-mono">
+                      <td className="py-3 px-3 text-center text-slate-600 font-mono font-semibold">
                         {kw.bestRank ? `#${kw.bestRank}` : '—'}
                       </td>
 
@@ -605,12 +660,12 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                         <div className="flex flex-wrap gap-1">
                           {kw.serpFeatures && kw.serpFeatures.length > 0 ? (
                             kw.serpFeatures.map((f, i) => (
-                              <span key={i} className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">
+                              <span key={i} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-medium">
                                 {f.replace('_', ' ')}
                               </span>
                             ))
                           ) : (
-                            <span className="text-[10px] text-slate-500">Standard organic</span>
+                            <span className="text-[10px] text-slate-400">Standard organic</span>
                           )}
                         </div>
                       </td>
@@ -619,7 +674,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setSelectedKeywordForResearch(kw)}
-                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shadow-xs"
                             title="Open in-depth rank drop and SERP research"
                           >
                             <BarChart3 className="w-3.5 h-3.5" />
@@ -627,7 +682,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                           </button>
                           <button
                             onClick={() => handleDeleteKeyword(kw.id)}
-                            className="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg hover:bg-white/5 transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition-colors"
                             title="Delete keyword"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -646,44 +701,44 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
 
       {/* Add Keyword Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-[#0f172a]/95 border border-white/15 backdrop-blur-2xl rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-indigo-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 text-slate-800">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-blue-600" />
               Add Keyword to Track
             </h3>
 
             <form onSubmit={handleAddKeyword} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Target Keyword</label>
+                <label className="block text-slate-700 font-semibold mb-1">Target Keyword</label>
                 <input
                   type="text"
                   placeholder="e.g. enterprise project management software"
                   value={newKeyword}
                   onChange={e => setNewKeyword(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none backdrop-blur-md"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Target URL</label>
+                <label className="block text-slate-700 font-semibold mb-1">Target URL</label>
                 <input
                   type="url"
                   value={newTargetUrl}
                   onChange={e => setNewTargetUrl(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none backdrop-blur-md font-mono text-[11px]"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none font-mono text-[11px]"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Target Country (All Countries)</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Target Country (All Countries)</label>
                   <select
                     value={newCountry}
                     onChange={e => setNewCountry(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:border-blue-500 focus:outline-none"
                   >
                     {ALL_COUNTRIES.map(c => (
                       <option key={c.code} value={c.code}>
@@ -694,11 +749,11 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Target Device</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Target Device</label>
                   <select
                     value={newDevice}
                     onChange={e => setNewDevice(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:border-blue-500 focus:outline-none"
                   >
                     <option value="mobile">Mobile (Smartphone Crawler)</option>
                     <option value="desktop">Desktop (Desktop Crawler)</option>
@@ -708,11 +763,11 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Priority</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Priority</label>
                   <select
                     value={newPriority}
                     onChange={e => setNewPriority(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800"
                   >
                     <option value="critical">Critical</option>
                     <option value="high">High</option>
@@ -722,11 +777,11 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Category</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Category</label>
                   <select
                     value={newCategory}
                     onChange={e => setNewCategory(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800"
                   >
                     <option value="Commercial">Commercial</option>
                     <option value="Informational">Informational</option>
@@ -736,11 +791,11 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Intent</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Intent</label>
                   <select
                     value={newIntent}
                     onChange={e => setNewIntent(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800"
                   >
                     <option value="commercial">Commercial</option>
                     <option value="transactional">Transactional</option>
@@ -751,27 +806,27 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Tags (Comma Separated)</label>
+                <label className="block text-slate-700 font-semibold mb-1">Tags (Comma Separated)</label>
                 <input
                   type="text"
                   placeholder="core-product, q3-push, high-acv"
                   value={newTags}
                   onChange={e => setNewTags(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-indigo-400 focus:outline-none backdrop-blur-md"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 rounded-xl font-medium transition-colors"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-600/30 transition-all"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-sm transition-all"
                 >
                   Save Keyword
                 </button>
@@ -783,23 +838,23 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
 
       {/* CSV Import Modal */}
       {showCsvModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-[#0f172a]/95 border border-white/15 backdrop-blur-2xl rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <FileSpreadsheet className="w-4 h-4 text-indigo-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 text-slate-800">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-blue-600" />
               Bulk CSV Keyword Import
             </h3>
-            <p className="text-xs text-slate-400">
-              Paste rows in format: <code className="text-indigo-400 font-mono">keyword, target_url, category</code>
+            <p className="text-xs text-slate-500">
+              Paste rows in format: <code className="text-blue-600 font-mono font-bold bg-blue-50 px-1 py-0.5 rounded">keyword, target_url, category</code>
             </p>
 
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Default Country</label>
+                <label className="block text-slate-700 font-semibold mb-1">Default Country</label>
                 <select
                   value={csvDefaultCountry}
                   onChange={e => setCsvDefaultCountry(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800"
                 >
                   {ALL_COUNTRIES.map(c => (
                     <option key={c.code} value={c.code}>
@@ -809,11 +864,11 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                 </select>
               </div>
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Default Device</label>
+                <label className="block text-slate-700 font-semibold mb-1">Default Device</label>
                 <select
                   value={csvDefaultDevice}
                   onChange={e => setCsvDefaultDevice(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-white"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800"
                 >
                   <option value="mobile">Mobile</option>
                   <option value="desktop">Desktop</option>
@@ -827,21 +882,21 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
                 onChange={e => setCsvText(e.target.value)}
                 placeholder={`best task management tools, https://${website.domain}/features/tasks, Commercial\nhow to organize agile sprints, https://${website.domain}/blog/sprints, Informational`}
                 rows={6}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-mono text-white focus:border-indigo-400 focus:outline-none backdrop-blur-md"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none"
                 required
               />
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowCsvModal(false)}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
                 >
                   Import Keywords
                 </button>
@@ -853,40 +908,40 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
 
       {/* GSC Query Importer Modal */}
       {showGscImportModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-[#0f172a]/95 border border-white/15 backdrop-blur-2xl rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 text-slate-800">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
                 Import High-Impression Search Console Queries
               </h3>
               <button
                 onClick={() => setShowGscImportModal(false)}
-                className="text-xs text-slate-400 hover:text-white"
+                className="text-xs text-slate-400 hover:text-slate-600 font-semibold"
               >
                 Close
               </button>
             </div>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Click any query below to automatically add it to your tracking queue (targeted for India Mobile SERP):
             </p>
 
-            <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1">
+            <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
               {topGscQueries.map((query, idx) => {
                 const isTracked = keywords.some(k => k.keyword.toLowerCase() === query.toLowerCase());
                 return (
                   <div
                     key={idx}
-                    className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-between gap-3 text-xs backdrop-blur-md transition-all"
+                    className="p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between gap-3 text-xs transition-all"
                   >
-                    <span className="font-medium text-slate-200 truncate">{query}</span>
+                    <span className="font-semibold text-slate-800 truncate">{query}</span>
                     {isTracked ? (
-                      <span className="text-[10px] text-indigo-400 font-semibold shrink-0">✓ Tracked</span>
+                      <span className="text-[10px] text-blue-600 font-bold shrink-0 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">✓ Tracked</span>
                     ) : (
                       <button
                         onClick={() => handleImportGscQuery(query)}
-                        className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-semibold shrink-0 shadow-sm transition-all"
+                        className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold shrink-0 shadow-xs transition-all"
                       >
                         + Track
                       </button>

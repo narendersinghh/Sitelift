@@ -73,6 +73,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     id: NavTab;
     label: string;
     icon: React.FC<{ className?: string }>;
+    iconColor: string;
+    iconBg: string;
     badge?: string | number;
     badgeColor?: string;
     dot?: boolean;
@@ -91,17 +93,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {
           id: 'dashboard',
           label: 'Overview',
-          icon: BarChart3
+          icon: BarChart3,
+          iconColor: 'text-blue-400',
+          iconBg: 'bg-blue-500/10 group-hover:bg-blue-500/20'
         },
         {
           id: 'all_pages',
           label: 'All Pages',
-          icon: FileText
+          icon: FileText,
+          iconColor: 'text-emerald-400',
+          iconBg: 'bg-emerald-500/10 group-hover:bg-emerald-500/20'
         },
         {
           id: 'declining_pages',
           label: 'Declining Pages',
           icon: TrendingDown,
+          iconColor: 'text-rose-400',
+          iconBg: 'bg-rose-500/10 group-hover:bg-rose-500/20',
           badge: criticalDecliningCount > 0 ? `${criticalDecliningCount} crit` : undefined,
           badgeColor: 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
         },
@@ -109,22 +117,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id: 'optimization_pipeline',
           label: 'Opt. Pipeline',
           icon: TrendingUp,
+          iconColor: 'text-purple-400',
+          iconBg: 'bg-purple-500/10 group-hover:bg-purple-500/20',
           badge: pipelineWinsCount > 0 ? `${pipelineWinsCount} wins` : pipelineTotalUrls > 0 ? `${pipelineTotalUrls}` : undefined,
-          badgeColor: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+          badgeColor: 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
         },
         {
           id: 'keywords',
           label: 'Keyword Tracking',
           icon: KeyRound,
+          iconColor: 'text-amber-400',
+          iconBg: 'bg-amber-500/10 group-hover:bg-amber-500/20',
           badge: activeKeywordsCount > 0 ? activeKeywordsCount : undefined,
-          badgeColor: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+          badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
         },
         {
           id: 'insights',
           label: 'Diagnostic Insights',
           icon: Sparkles,
+          iconColor: 'text-pink-400',
+          iconBg: 'bg-pink-500/10 group-hover:bg-pink-500/20',
           badge: highImpactInsightsCount > 0 ? `${highImpactInsightsCount} new` : undefined,
-          badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+          badgeColor: 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
         }
       ]
     },
@@ -135,18 +149,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id: 'activities',
           label: 'Activity Planner',
           icon: ActivityIcon,
+          iconColor: 'text-emerald-400',
+          iconBg: 'bg-emerald-500/10 group-hover:bg-emerald-500/20',
           badge: pendingActivitiesCount > 0 ? pendingActivitiesCount : undefined,
           badgeColor: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
         },
         {
           id: 'reports',
           label: 'Monthly Reports',
-          icon: FileText
+          icon: FileText,
+          iconColor: 'text-sky-400',
+          iconBg: 'bg-sky-500/10 group-hover:bg-sky-500/20'
         },
         {
           id: 'connections',
           label: 'API Connections',
           icon: Radio,
+          iconColor: 'text-cyan-400',
+          iconBg: 'bg-cyan-500/10 group-hover:bg-cyan-500/20',
           dot: true,
           dotColor: isConnectionsOk ? 'bg-emerald-400' : 'bg-amber-400'
         }
@@ -159,30 +179,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id: 'websites',
           label: 'All Websites',
           icon: Globe,
+          iconColor: 'text-violet-400',
+          iconBg: 'bg-violet-500/10 group-hover:bg-violet-500/20',
           badge: websites.length,
           badgeColor: 'bg-white/10 text-slate-300 border border-white/10'
         },
         {
           id: 'category_rules',
-          label: 'Category Rules',
-          icon: Layers
+          label: 'Category & Classification',
+          icon: Layers,
+          iconColor: 'text-indigo-400',
+          iconBg: 'bg-indigo-500/10 group-hover:bg-indigo-500/20'
         },
         {
           id: 'sync_logs',
           label: 'Sync & Cron Logs',
-          icon: Clock
+          icon: Clock,
+          iconColor: 'text-orange-400',
+          iconBg: 'bg-orange-500/10 group-hover:bg-orange-500/20'
         },
         {
           id: 'deployment',
           label: 'Deploy & Installer',
           icon: FolderCode,
+          iconColor: 'text-blue-400',
+          iconBg: 'bg-blue-500/10 group-hover:bg-blue-500/20',
           badge: 'PHP 8.2+',
-          badgeColor: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+          badgeColor: 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
         },
         {
           id: 'settings',
           label: 'Settings',
-          icon: Settings
+          icon: Settings,
+          iconColor: 'text-slate-400',
+          iconBg: 'bg-white/5 group-hover:bg-white/10'
         }
       ]
     }
@@ -194,26 +224,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const sidebarContent = (
-    <div className="h-full flex flex-col justify-between text-slate-200 select-none overflow-hidden">
+    <div className="h-full flex flex-col justify-between text-slate-200 select-none overflow-hidden bg-[#0c1322]">
       
       {/* Top Header / Brand */}
-      <div className="shrink-0 p-4 border-b border-white/10 flex items-center justify-between">
+      <div className="shrink-0 p-4 border-b border-slate-800 flex items-center justify-between">
         <div
           onClick={() => handleItemClick('dashboard')}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-600/30 group-hover:scale-105 transition-transform shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform shrink-0">
             S
           </div>
           {!isCollapsed && (
             <div className="leading-tight overflow-hidden">
               <div className="font-bold text-base tracking-tight text-white flex items-center gap-1.5">
                 <span>Sitelift</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="text-[11px] px-1.5 py-0.2 rounded-full font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30">
                   v1.0
                 </span>
               </div>
-              <div className="text-[11px] text-slate-400 truncate">Self-Hosted SEO Suite</div>
+              <div className="text-xs text-slate-400 truncate">Your personal SEO Suite</div>
             </div>
           )}
         </div>
@@ -222,7 +252,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center gap-1">
           <button
             onClick={onCloseMobile}
-            className="lg:hidden p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="lg:hidden p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
             title="Close navigation"
           >
             <X className="w-5 h-5" />
@@ -230,7 +260,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           
           <button
             onClick={onToggleCollapse}
-            className="hidden lg:flex p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="hidden lg:flex p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
             title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -238,17 +268,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* Nav Groups Menu - Independent Scrollbar */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-5 custom-scrollbar">
+      {/* Nav Groups Menu - Dark Scrollbar */}
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-5 dark-sidebar-scrollbar">
         {navGroups.map((group, gIdx) => (
-          <div key={gIdx} className="space-y-1">
+          <div key={gIdx} className="space-y-1.5">
             {!isCollapsed && (
-              <div className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <div className="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 {group.title}
               </div>
             )}
 
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {group.items.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -257,18 +287,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => handleItemClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all group relative ${
                       isActive
-                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5'
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
                     } ${isCollapsed ? 'justify-center px-0' : ''}`}
                     title={isCollapsed ? item.label : undefined}
                   >
-                    <Icon
-                      className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
-                        isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
-                      }`}
-                    />
+                    <div className={`p-1.5 rounded-lg transition-colors shrink-0 ${
+                      isActive ? 'bg-white/20 text-white' : `${item.iconBg} ${item.iconColor}`
+                    }`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
 
                     {!isCollapsed && (
                       <span className="truncate flex-1 text-left">{item.label}</span>
@@ -276,8 +306,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {!isCollapsed && item.badge !== undefined && (
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold font-mono tracking-tight shrink-0 ${
-                          item.badgeColor || 'bg-white/10 text-slate-300'
+                        className={`text-xs px-2 py-0.5 rounded-full font-bold font-mono tracking-tight shrink-0 ${
+                          item.badgeColor || 'bg-slate-800 text-slate-300'
                         }`}
                       >
                         {item.badge}
@@ -294,7 +324,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Collapsed Tooltip / Dot */}
                     {isCollapsed && (item.badge || item.dot) && (
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-400" />
+                      <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-400" />
                     )}
                   </button>
                 );
@@ -305,22 +335,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Sidebar Footer */}
-      <div className="shrink-0 p-3 border-t border-white/10 bg-slate-950/40 space-y-2">
+      <div className="shrink-0 p-3 border-t border-slate-800 bg-[#080d18] space-y-2">
         {/* User Card & Logout */}
-        <div className={`flex items-center justify-between rounded-xl bg-white/5 border border-white/10 p-2 backdrop-blur-md ${
+        <div className={`flex items-center justify-between rounded-xl bg-slate-900 border border-slate-800 p-2.5 ${
           isCollapsed ? 'justify-center p-1.5' : ''
         }`}>
           {!isCollapsed ? (
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 font-bold text-xs shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs shrink-0">
                 {authUser?.name ? authUser.name.charAt(0) : 'A'}
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-semibold text-slate-200 truncate leading-tight">
-                  {authUser?.name || 'Administrator'}
+                <div className="text-sm font-semibold text-slate-200 truncate leading-tight">
+                  {authUser?.name?.replace(/Primary /i, '') || 'Administrator'}
                 </div>
-                <div className="text-[10px] text-indigo-400 font-medium truncate leading-tight">
-                  Self-Hosted PHP 8.2+
+                <div className="text-xs text-slate-400 font-medium truncate leading-tight">
+                  Active Session
                 </div>
               </div>
             </div>
@@ -328,7 +358,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             onClick={onLogout}
-            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
             title="Log Out"
           >
             <LogOut className="w-4 h-4" />
@@ -351,17 +381,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Mobile Slide-Over Drawer */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#0f172a]/95 border-r border-white/10 backdrop-blur-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#0c1322] border-r border-slate-800 transition-transform duration-300 ease-in-out lg:hidden ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {sidebarContent}
       </aside>
 
-      {/* Desktop Sticky Sidebar (Locked full height, scrollable internally) */}
+      {/* Desktop Sticky Sidebar (Locked full height, scrollable internally - 10px wider: w-[276px]) */}
       <aside
-        className={`hidden lg:flex flex-col shrink-0 h-full bg-[#0f172a] border-r border-white/10 z-30 transition-all duration-300 ease-in-out overflow-hidden ${
-          isCollapsed ? 'w-20' : 'w-64'
+        className={`hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-[#0c1322] border-r border-slate-800 z-30 transition-all duration-300 ease-in-out overflow-hidden ${
+          isCollapsed ? 'w-20' : 'w-[276px]'
         }`}
       >
         {sidebarContent}

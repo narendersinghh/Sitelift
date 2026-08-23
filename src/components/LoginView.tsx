@@ -20,7 +20,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
 
     storage.saveAuthUser({
       id: 'usr-1',
-      name: 'SEO Administrator',
+      name: 'Administrator',
       email,
       role: 'admin',
       createdAt: new Date().toISOString()
@@ -30,39 +30,35 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 text-slate-100 relative overflow-hidden">
-      {/* Ambient background glows for Frosted Glass */}
-      <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none -z-10" />
-
-      <div className="bg-white/5 border border-white/10 rounded-2xl w-full max-w-md p-8 shadow-2xl backdrop-blur-2xl space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#f0f5fa] text-slate-900 relative">
+      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-8 shadow-xl space-y-6">
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600 mx-auto flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-indigo-600/30">
+          <div className="w-12 h-12 rounded-2xl bg-blue-600 mx-auto flex items-center justify-center font-bold text-white text-xl shadow-xs">
             S
           </div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Sitelift</h1>
-          <p className="text-xs text-slate-400">Self-Hosted SEO Monitoring & Activity Planning</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Sitelift</h1>
+          <p className="text-sm font-medium text-slate-500">Your personal SEO Suite</p>
         </div>
 
         {error && (
-          <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-300 text-center backdrop-blur-md">
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-sm text-rose-800 text-center font-bold">
             {error}
           </div>
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleLogin} className="space-y-4 text-xs">
+        <form onSubmit={handleLogin} className="space-y-4 text-sm">
           <div>
-            <label className="block text-slate-300 font-medium mb-1.5">Email Address</label>
+            <label className="block text-slate-700 font-bold mb-1.5 text-xs">Email Address</label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full pl-10 pr-3.5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:border-indigo-400 focus:outline-none backdrop-blur-md"
+                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:outline-none text-sm font-medium"
                 placeholder="admin@yourdomain.com"
                 required
               />
@@ -70,14 +66,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1.5">Password</label>
+            <label className="block text-slate-700 font-bold mb-1.5 text-xs">Password</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full pl-10 pr-3.5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:border-indigo-400 focus:outline-none backdrop-blur-md"
+                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:outline-none text-sm font-medium"
                 placeholder="••••••••••••"
                 required
               />
@@ -86,17 +82,17 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
 
           <button
             type="submit"
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-indigo-600/30 backdrop-blur-md transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-xs transition-all flex items-center justify-center gap-2"
           >
             <span>Sign In to Dashboard</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        {/* Shared Hosting Self-Hosted Footer Note */}
-        <div className="pt-4 border-t border-white/10 text-center text-[11px] text-slate-500 space-y-1">
-          <div>Self-Hosted Instance • PHP 8.2+ & MySQL 8</div>
-          <div className="text-indigo-400 font-medium">No external telemetry or SaaS tracking</div>
+        {/* Self-Hosted Footer Note */}
+        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-500 space-y-1">
+          <div className="text-slate-600 font-medium">Private Self-Hosted Instance</div>
+          <div className="text-blue-700 font-bold">No external telemetry or SaaS tracking</div>
         </div>
 
       </div>

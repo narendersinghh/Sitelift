@@ -75,14 +75,9 @@ export function App() {
   }
 
   return (
-    <div className="h-screen w-screen bg-[#0f172a] text-slate-200 flex font-sans selection:bg-indigo-500 selection:text-white relative overflow-hidden">
+    <div className="h-screen w-screen bg-[#f0f5fa] text-slate-800 flex font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden">
       
-      {/* Frosted Glass Ambient Luminous Glowing Orbs */}
-      <div className="fixed top-[-10%] left-[-10%] w-[45%] h-[45%] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none z-0"></div>
-      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/15 rounded-full blur-[150px] pointer-events-none z-0"></div>
-      <div className="fixed top-[30%] right-[15%] w-[35%] h-[35%] bg-purple-600/10 rounded-full blur-[130px] pointer-events-none z-0"></div>
-
-      {/* Left Side Navigation Panel (Sticky / Locked) */}
+      {/* Left Side Navigation Panel (Dark sticky sidebar) */}
       <Sidebar
         activeTab={activeTab}
         onSelectTab={setActiveTab}
@@ -95,8 +90,8 @@ export function App() {
         onToggleCollapse={handleToggleCollapse}
       />
 
-      {/* Main Content Area - Scrollable Independently */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden z-10 custom-scrollbar">
+      {/* Main Content Area - Light Blue Theme, Scrollable Independently */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden z-10 custom-scrollbar bg-[#f0f5fa]">
         
         {/* Top Header Bar */}
         <TopHeader
@@ -111,15 +106,15 @@ export function App() {
         {/* Floating Notification Toast */}
         {toastMessage && (
           <div className="fixed bottom-5 right-5 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200">
-            <div className={`px-4 py-3 rounded-2xl shadow-2xl border flex items-center gap-2.5 text-xs font-medium backdrop-blur-xl ${
+            <div className={`px-4 py-3 rounded-xl shadow-lg border flex items-center gap-2.5 text-xs font-semibold ${
               toastMessage.type === 'success'
-                ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300'
-                : 'bg-rose-950/90 border-rose-500/30 text-rose-300'
+                ? 'bg-emerald-600 border-emerald-700 text-white'
+                : 'bg-rose-600 border-rose-700 text-white'
             }`}>
               {toastMessage.type === 'success' ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-white shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                <AlertCircle className="w-4 h-4 text-white shrink-0" />
               )}
               <span>{toastMessage.text}</span>
             </div>

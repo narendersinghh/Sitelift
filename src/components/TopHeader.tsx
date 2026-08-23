@@ -39,7 +39,7 @@ const TAB_METADATA: Record<NavTab, { title: string; subtitle: string; category: 
   },
   keywords: {
     title: 'Keyword Tracking & SERP',
-    subtitle: 'Bright Data SERP API tracking, position trends, and search features',
+    subtitle: 'Keyword tracking API rank updates, position trends, and search features',
     category: 'SEO Intelligence'
   },
   insights: {
@@ -68,8 +68,8 @@ const TAB_METADATA: Record<NavTab, { title: string; subtitle: string; category: 
     category: 'System & Tools'
   },
   category_rules: {
-    title: 'URL Category & Classification Rules',
-    subtitle: 'Assign regex, prefix patterns, and custom page classifications',
+    title: 'Category & Classification Rules',
+    subtitle: 'Assign regex, glob wildcards, and custom page classifications',
     category: 'System & Tools'
   },
   sync_logs: {
@@ -115,26 +115,26 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 shrink-0 bg-[#0f172a]/95 border-b border-white/10 backdrop-blur-2xl px-4 sm:px-6 lg:px-8 py-3 transition-all">
+    <header className="sticky top-0 z-40 shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 transition-all shadow-xs">
       <div className="flex items-center justify-between gap-4">
         
         {/* Left Side: Mobile Hamburger & Current View Breadcrumbs */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={onOpenMobileSidebar}
-            className="lg:hidden p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors"
+            className="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition-colors"
             title="Open Navigation"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           <div className="min-w-0">
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
-              <span className="text-indigo-400 font-medium">{currentMeta.category}</span>
+            <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+              <span className="text-blue-600 font-semibold">{currentMeta.category}</span>
               <span>/</span>
-              <span className="text-slate-200 font-semibold truncate">{currentMeta.title}</span>
+              <span className="text-slate-800 font-semibold truncate">{currentMeta.title}</span>
             </div>
-            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight truncate">
               {currentMeta.title}
             </h1>
           </div>
@@ -146,25 +146,25 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowSiteMenu(!showSiteMenu)}
-              className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all shadow-sm ${
+              className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shadow-xs ${
                 showSiteMenu
-                  ? 'bg-indigo-600 border border-indigo-500/40 text-white shadow-indigo-600/30'
-                  : 'bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200'
+                  ? 'bg-blue-600 border border-blue-700 text-white shadow-blue-600/20'
+                  : 'bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800'
               }`}
               title="Target Monitored Website"
             >
-              <div className="w-5 h-5 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-[10px] shrink-0">
+              <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-xs">
                 {activeWebsite ? activeWebsite.name.charAt(0) : 'W'}
               </div>
               <div className="text-left hidden sm:block">
-                <span className="block font-semibold text-white truncate max-w-[140px]">
+                <span className={`block text-xs font-bold truncate max-w-[150px] ${showSiteMenu ? 'text-white' : 'text-slate-900'}`}>
                   {activeWebsite ? activeWebsite.name : 'Select Website'}
                 </span>
-                <span className="block text-[10px] text-slate-400 font-mono -mt-0.5 truncate max-w-[140px]">
+                <span className={`block text-[11px] font-mono -mt-0.5 truncate max-w-[150px] ${showSiteMenu ? 'text-blue-100' : 'text-slate-500'}`}>
                   {activeWebsite?.domain || 'no domain'}
                 </span>
               </div>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${showSiteMenu ? 'rotate-180 text-white' : ''}`} />
+              <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${showSiteMenu ? 'rotate-180 text-white' : 'text-slate-500'}`} />
             </button>
 
             {showSiteMenu && (
@@ -173,10 +173,10 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                   className="fixed inset-0 z-40 bg-transparent"
                   onClick={() => setShowSiteMenu(false)}
                 />
-                <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-100">
-                  <div className="text-[10px] font-bold text-slate-400 px-2.5 py-1 uppercase tracking-wider flex items-center justify-between">
+                <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="text-xs font-bold text-slate-500 px-2.5 py-1 uppercase tracking-wider flex items-center justify-between">
                     <span>Switch Target Website</span>
-                    <span className="text-[9px] text-slate-500 font-mono">{websites.length} total</span>
+                    <span className="text-[11px] text-slate-400 font-mono">{websites.length} total</span>
                   </div>
                   <div className="max-h-60 overflow-y-auto space-y-1 my-1.5 custom-scrollbar pr-1">
                     {websites.map(site => (
@@ -188,13 +188,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                         }}
                         className={`w-full text-left px-3 py-2 text-xs rounded-xl flex items-center justify-between transition-all ${
                           activeWebsite?.id === site.id
-                            ? 'bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-600/30'
-                            : 'text-slate-200 hover:bg-white/10 bg-slate-900/60'
+                            ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                            : 'text-slate-700 hover:bg-slate-100 bg-white'
                         }`}
                       >
                         <div className="truncate mr-2 min-w-0">
                           <div className="font-medium truncate">{site.name}</div>
-                          <div className={`text-[10px] truncate font-mono ${activeWebsite?.id === site.id ? 'text-indigo-200' : 'text-slate-400'}`}>
+                          <div className={`text-[10px] truncate font-mono ${activeWebsite?.id === site.id ? 'text-blue-100' : 'text-slate-500'}`}>
                             {site.domain} • <span className="uppercase">{site.targetCountry || 'US'}</span> ({site.targetDevice || 'desktop'})
                           </div>
                         </div>
@@ -204,13 +204,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                       </button>
                     ))}
                   </div>
-                  <div className="border-t border-slate-800 pt-2 px-1">
+                  <div className="border-t border-slate-100 pt-2 px-1">
                     <button
                       onClick={() => {
                         onNavigateToTab('websites');
                         setShowSiteMenu(false);
                       }}
-                      className="w-full text-left px-2.5 py-1.5 text-xs text-indigo-400 hover:text-indigo-300 hover:bg-white/5 rounded-lg font-medium transition-colors flex items-center gap-1.5"
+                      className="w-full text-left px-2.5 py-1.5 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg font-semibold transition-colors flex items-center gap-1.5"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Manage All Websites</span>

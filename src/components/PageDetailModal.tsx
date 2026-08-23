@@ -107,13 +107,13 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
   const getPriorityColor = (level: string) => {
     switch (level) {
       case 'critical':
-        return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+        return 'bg-rose-50 text-rose-700 border-rose-200';
       case 'high':
-        return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'medium':
-        return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30';
+        return 'bg-blue-50 text-blue-700 border-blue-200';
       default:
-        return 'bg-white/10 text-slate-300 border-white/10';
+        return 'bg-slate-50 text-slate-700 border-slate-200';
     }
   };
 
@@ -121,19 +121,19 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
   const nonBrandedQueries = item.topLosingQueries.filter(q => !(q as any).isBranded);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="bg-[#0b1329] border border-slate-700/80 rounded-2xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-150 ring-1 ring-white/10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
+      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-150">
         
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between shrink-0 bg-white/5">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50 rounded-t-3xl">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-400 backdrop-blur-md">
+            <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600">
               <TrendingDown className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white truncate max-w-lg">{item.cleanPath}</h3>
-                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10">
+                <h3 className="text-base font-bold text-slate-900 truncate max-w-lg">{item.cleanPath}</h3>
+                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 font-bold">
                   {item.pageCategory}
                 </span>
                 <span className={`text-[11px] px-2.5 py-0.5 rounded-full border uppercase font-bold ${getPriorityColor(item.priorityLevel)}`}>
@@ -144,7 +144,7 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                 href={item.pageUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs text-indigo-400 hover:underline flex items-center gap-1 mt-0.5 font-mono"
+                className="text-xs text-blue-600 hover:underline flex items-center gap-1 mt-0.5 font-mono"
               >
                 <span>{item.pageUrl}</span>
                 <ExternalLink className="w-3 h-3" />
@@ -153,20 +153,20 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-xl transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="px-6 border-b border-white/10 bg-slate-950/40 flex items-center gap-2 shrink-0 overflow-x-auto">
+        <div className="px-6 border-b border-slate-200 bg-white flex items-center gap-2 shrink-0 overflow-x-auto">
           <button
             onClick={() => setActiveTab('comparison')}
-            className={`px-4 py-3 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+            className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
               activeTab === 'comparison'
-                ? 'border-indigo-500 text-indigo-300 bg-white/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <SplitSquareVertical className="w-3.5 h-3.5" />
@@ -175,43 +175,43 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
 
           <button
             onClick={() => setActiveTab('branded')}
-            className={`px-4 py-3 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+            className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
               activeTab === 'branded'
-                ? 'border-indigo-500 text-indigo-300 bg-white/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-purple-600" />
             <span>Branded Metrics Breakdown</span>
           </button>
 
           <button
             onClick={() => setActiveTab('non_branded')}
-            className={`px-4 py-3 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+            className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
               activeTab === 'non_branded'
-                ? 'border-indigo-500 text-indigo-300 bg-white/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Search className="w-3.5 h-3.5" />
+            <Search className="w-3.5 h-3.5 text-amber-600" />
             <span>Non-Branded Metrics Breakdown</span>
           </button>
 
           <button
             onClick={() => setActiveTab('action_plan')}
-            className={`px-4 py-3 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+            className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
               activeTab === 'action_plan'
-                ? 'border-indigo-500 text-indigo-300 bg-white/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Award className="w-3.5 h-3.5" />
+            <Award className="w-3.5 h-3.5 text-emerald-600" />
             <span>Remediation Roadmap</span>
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1 bg-[#f0f5fa]">
           
           {/* TAB 1: SIDE BY SIDE COMPARISON */}
           {activeTab === 'comparison' && research && (
@@ -219,71 +219,71 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
               
               {/* Overall Summary Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total GA4 Sessions</div>
-                  <div className="text-xl font-bold text-white mt-1">{item.currentSessions.toLocaleString()}</div>
-                  <div className="text-xs text-rose-400 font-medium mt-0.5">
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total GA4 Sessions</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{item.currentSessions.toLocaleString()}</div>
+                  <div className="text-xs text-rose-600 font-bold mt-0.5">
                     -{item.absoluteLoss.toLocaleString()} ({item.dropPercentage}%)
                   </div>
                 </div>
 
-                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total GSC Clicks</div>
-                  <div className="text-xl font-bold text-white mt-1">{item.currentClicks.toLocaleString()}</div>
-                  <div className={`text-xs font-medium mt-0.5 ${item.clickChange < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total GSC Clicks</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{item.currentClicks.toLocaleString()}</div>
+                  <div className={`text-xs font-bold mt-0.5 ${item.clickChange < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
                     {item.clickChange >= 0 ? '+' : ''}{item.clickChange.toLocaleString()} clicks
                   </div>
                 </div>
 
-                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Overall CTR</div>
-                  <div className="text-xl font-bold text-white mt-1">{item.currentCtr}%</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Prev: {item.previousCtr}%</div>
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Overall CTR</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{item.currentCtr}%</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Prev: {item.previousCtr}%</div>
                 </div>
 
-                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Avg SERP Position</div>
-                  <div className="text-xl font-bold text-white mt-1">{item.currentAvgPosition ? `#${item.currentAvgPosition}` : '—'}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Prev: {item.previousAvgPosition ? `#${item.previousAvgPosition}` : '—'}</div>
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Avg SERP Position</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{item.currentAvgPosition ? `#${item.currentAvgPosition}` : '—'}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Prev: {item.previousAvgPosition ? `#${item.previousAvgPosition}` : '—'}</div>
                 </div>
               </div>
 
               {/* Comprehensive Metric Comparison Matrix */}
-              <div className="border border-white/10 rounded-2xl overflow-hidden bg-white/5 shadow-xl">
-                <div className="p-4 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                    <SplitSquareVertical className="w-4 h-4 text-indigo-400" />
+              <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
+                <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <SplitSquareVertical className="w-4 h-4 text-blue-600" />
                     Granular Metric Comparison: Branded vs Non-Branded
                   </h4>
-                  <span className="text-[11px] text-slate-400">All data directly computed from Google Search Console</span>
+                  <span className="text-[11px] text-slate-500">All data directly computed from Google Search Console</span>
                 </div>
 
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-white/5 text-slate-400 border-b border-white/10 text-[10px] font-bold uppercase tracking-wider">
+                  <thead className="bg-slate-100 text-slate-600 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider">
                     <tr>
                       <th className="py-3.5 px-4">Performance Metric</th>
-                      <th className="py-3.5 px-4 text-center bg-indigo-500/5 text-indigo-300">Branded Queries</th>
-                      <th className="py-3.5 px-4 text-center bg-purple-500/5 text-purple-300">Non-Branded Queries</th>
+                      <th className="py-3.5 px-4 text-center bg-blue-50/70 text-blue-800">Branded Queries</th>
+                      <th className="py-3.5 px-4 text-center bg-purple-50/70 text-purple-800">Non-Branded Queries</th>
                       <th className="py-3.5 px-4 text-right">Variance / Insight</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5 bg-transparent">
+                  <tbody className="divide-y divide-slate-100 bg-white">
                     {/* Clicks Row */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-200">Organic Clicks</td>
-                      <td className="py-3.5 px-4 text-center bg-indigo-500/5">
-                        <div className="font-bold text-white font-mono">{research.brandClicks.toLocaleString()}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: {research.prevBrandClicks.toLocaleString()}</div>
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-800">Organic Clicks</td>
+                      <td className="py-3.5 px-4 text-center bg-blue-50/40">
+                        <div className="font-bold text-slate-900 font-mono">{research.brandClicks.toLocaleString()}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: {research.prevBrandClicks.toLocaleString()}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-center bg-purple-500/5">
-                        <div className="font-bold text-white font-mono">{research.nonBrandClicks.toLocaleString()}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: {research.prevNonBrandClicks.toLocaleString()}</div>
+                      <td className="py-3.5 px-4 text-center bg-purple-50/40">
+                        <div className="font-bold text-slate-900 font-mono">{research.nonBrandClicks.toLocaleString()}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: {research.prevNonBrandClicks.toLocaleString()}</div>
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
                           research.nonBrandLoss > research.brandLoss
-                            ? 'bg-rose-500/20 text-rose-300'
-                            : 'bg-amber-500/20 text-amber-300'
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                            : 'bg-amber-50 text-amber-700 border border-amber-200'
                         }`}>
                           {research.nonBrandLoss > research.brandLoss ? 'Non-Brand Loss Dominant' : 'Brand Loss Dominant'}
                         </span>
@@ -291,77 +291,77 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                     </tr>
 
                     {/* Lost Clicks Row */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-200">Lost Clicks</td>
-                      <td className="py-3.5 px-4 text-center bg-indigo-500/5 font-mono font-bold text-amber-400">
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-800">Lost Clicks</td>
+                      <td className="py-3.5 px-4 text-center bg-blue-50/40 font-mono font-bold text-amber-600">
                         -{research.brandLoss} (-{research.brandLossPct}%)
                       </td>
-                      <td className="py-3.5 px-4 text-center bg-purple-500/5 font-mono font-bold text-rose-400">
+                      <td className="py-3.5 px-4 text-center bg-purple-50/40 font-mono font-bold text-rose-600">
                         -{research.nonBrandLoss} (-{research.nonBrandLossPct}%)
                       </td>
-                      <td className="py-3.5 px-4 text-right text-slate-300 text-[11px]">
+                      <td className="py-3.5 px-4 text-right text-slate-600 text-[11px]">
                         Total {research.brandLoss + research.nonBrandLoss} lost clicks
                       </td>
                     </tr>
 
                     {/* Impressions Row */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-200">Search Impressions</td>
-                      <td className="py-3.5 px-4 text-center bg-indigo-500/5">
-                        <div className="font-bold text-white font-mono">{research.brandImpressions.toLocaleString()}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: {research.prevBrandImpressions.toLocaleString()}</div>
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-800">Search Impressions</td>
+                      <td className="py-3.5 px-4 text-center bg-blue-50/40">
+                        <div className="font-bold text-slate-900 font-mono">{research.brandImpressions.toLocaleString()}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: {research.prevBrandImpressions.toLocaleString()}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-center bg-purple-500/5">
-                        <div className="font-bold text-white font-mono">{research.nonBrandImpressions.toLocaleString()}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: {research.prevNonBrandImpressions.toLocaleString()}</div>
+                      <td className="py-3.5 px-4 text-center bg-purple-50/40">
+                        <div className="font-bold text-slate-900 font-mono">{research.nonBrandImpressions.toLocaleString()}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: {research.prevNonBrandImpressions.toLocaleString()}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-right text-slate-300 font-mono text-[11px]">
+                      <td className="py-3.5 px-4 text-right text-slate-600 font-mono text-[11px]">
                         Imp Loss: -{research.nonBrandImpLoss} (NB) vs -{research.brandImpLoss} (B)
                       </td>
                     </tr>
 
                     {/* CTR Row */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-200">Click-Through Rate (CTR)</td>
-                      <td className="py-3.5 px-4 text-center bg-indigo-500/5">
-                        <div className="font-bold text-white font-mono">{research.brandCtr}%</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: {research.prevBrandCtr}%</div>
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-800">Click-Through Rate (CTR)</td>
+                      <td className="py-3.5 px-4 text-center bg-blue-50/40">
+                        <div className="font-bold text-slate-900 font-mono">{research.brandCtr}%</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: {research.prevBrandCtr}%</div>
                       </td>
-                      <td className="py-3.5 px-4 text-center bg-purple-500/5">
-                        <div className="font-bold text-white font-mono">{research.nonBrandCtr}%</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: {research.prevNonBrandCtr}%</div>
+                      <td className="py-3.5 px-4 text-center bg-purple-50/40">
+                        <div className="font-bold text-slate-900 font-mono">{research.nonBrandCtr}%</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: {research.prevNonBrandCtr}%</div>
                       </td>
-                      <td className="py-3.5 px-4 text-right text-slate-300 text-[11px]">
+                      <td className="py-3.5 px-4 text-right text-slate-600 text-[11px]">
                         {research.nonBrandCtr < research.prevNonBrandCtr ? 'Non-brand CTR dropped' : 'Non-brand CTR stable'}
                       </td>
                     </tr>
 
                     {/* Avg Position Row */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-200">Average SERP Position</td>
-                      <td className="py-3.5 px-4 text-center bg-indigo-500/5">
-                        <div className="font-bold text-white font-mono">#{research.brandAvgPosition}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: #{research.prevBrandAvgPosition}</div>
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-800">Average SERP Position</td>
+                      <td className="py-3.5 px-4 text-center bg-blue-50/40">
+                        <div className="font-bold text-slate-900 font-mono">#{research.brandAvgPosition}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: #{research.prevBrandAvgPosition}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-center bg-purple-500/5">
-                        <div className="font-bold text-white font-mono">#{research.nonBrandAvgPosition}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">Prev: #{research.prevNonBrandAvgPosition}</div>
+                      <td className="py-3.5 px-4 text-center bg-purple-50/40">
+                        <div className="font-bold text-slate-900 font-mono">#{research.nonBrandAvgPosition}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">Prev: #{research.prevNonBrandAvgPosition}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-right text-slate-300 text-[11px]">
+                      <td className="py-3.5 px-4 text-right text-slate-600 text-[11px]">
                         {research.nonBrandAvgPosition > research.prevNonBrandAvgPosition ? 'Ranking slippage detected' : 'Positions preserved'}
                       </td>
                     </tr>
 
                     {/* Distinct Queries Count */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-200">Ranking Queries Count</td>
-                      <td className="py-3.5 px-4 text-center bg-indigo-500/5 font-mono font-bold text-slate-200">
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-800">Ranking Queries Count</td>
+                      <td className="py-3.5 px-4 text-center bg-blue-50/40 font-mono font-bold text-slate-800">
                         {research.brandQueriesCount} branded queries
                       </td>
-                      <td className="py-3.5 px-4 text-center bg-purple-500/5 font-mono font-bold text-slate-200">
+                      <td className="py-3.5 px-4 text-center bg-purple-50/40 font-mono font-bold text-slate-800">
                         {research.nonBrandQueriesCount} non-branded queries
                       </td>
-                      <td className="py-3.5 px-4 text-right text-slate-300 text-[11px]">
+                      <td className="py-3.5 px-4 text-right text-slate-600 text-[11px]">
                         {(research.nonBrandQueriesCount / (research.brandQueriesCount + research.nonBrandQueriesCount || 1) * 100).toFixed(0)}% non-brand query share
                       </td>
                     </tr>
@@ -373,32 +373,32 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   onClick={() => setActiveTab('branded')}
-                  className="p-4 bg-indigo-950/20 hover:bg-indigo-950/40 border border-indigo-500/30 rounded-2xl text-left transition-all group"
+                  className="p-4 bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 rounded-2xl text-left transition-all group shadow-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-indigo-400" />
+                    <span className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-purple-600" />
                       View Branded Queries & Metrics
                     </span>
-                    <ArrowRight className="w-4 h-4 text-indigo-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <p className="text-xs text-slate-300 mt-2">
+                  <p className="text-xs text-slate-600 mt-2">
                     Inspect brand navigation patterns, entity click volumes, and exact brand query drops.
                   </p>
                 </button>
 
                 <button
                   onClick={() => setActiveTab('non_branded')}
-                  className="p-4 bg-purple-950/20 hover:bg-purple-950/40 border border-purple-500/30 rounded-2xl text-left transition-all group"
+                  className="p-4 bg-white hover:bg-purple-50/50 border border-slate-200 hover:border-purple-300 rounded-2xl text-left transition-all group shadow-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <Search className="w-4 h-4 text-purple-400" />
+                    <span className="text-xs font-bold text-purple-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Search className="w-4 h-4 text-amber-600" />
                       View Non-Branded Queries & Metrics
                     </span>
-                    <ArrowRight className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-purple-600 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <p className="text-xs text-slate-300 mt-2">
+                  <p className="text-xs text-slate-600 mt-2">
                     Inspect generic commercial search terms, competitor displacements, and keyword ranking decay.
                   </p>
                 </button>
@@ -413,57 +413,57 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
               
               {/* Branded KPI Strip */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-4 bg-indigo-950/20 border border-indigo-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Branded Clicks</div>
-                  <div className="text-xl font-bold text-white mt-1">{research.brandClicks.toLocaleString()}</div>
-                  <div className="text-xs text-amber-400 font-medium mt-0.5">
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Branded Clicks</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{research.brandClicks.toLocaleString()}</div>
+                  <div className="text-xs text-amber-600 font-bold mt-0.5">
                     -{research.brandLoss} ({research.brandLossPct}% drop)
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-1">Prev: {research.prevBrandClicks.toLocaleString()} clicks</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Prev: {research.prevBrandClicks.toLocaleString()} clicks</div>
                 </div>
 
-                <div className="p-4 bg-indigo-950/20 border border-indigo-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Branded Impressions</div>
-                  <div className="text-xl font-bold text-white mt-1">{research.brandImpressions.toLocaleString()}</div>
-                  <div className="text-xs text-slate-300 font-medium mt-0.5">
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Branded Impressions</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{research.brandImpressions.toLocaleString()}</div>
+                  <div className="text-xs text-slate-700 font-medium mt-0.5">
                     Prev: {research.prevBrandImpressions.toLocaleString()}
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-1">Loss: -{research.brandImpLoss.toLocaleString()} ({research.brandImpLossPct}%)</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Loss: -{research.brandImpLoss.toLocaleString()} ({research.brandImpLossPct}%)</div>
                 </div>
 
-                <div className="p-4 bg-indigo-950/20 border border-indigo-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Branded CTR</div>
-                  <div className="text-xl font-bold text-white mt-1">{research.brandCtr}%</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Prev: {research.prevBrandCtr}%</div>
-                  <div className="text-[10px] text-slate-400 mt-1">Brand navigation CTR</div>
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Branded CTR</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{research.brandCtr}%</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Prev: {research.prevBrandCtr}%</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Brand navigation CTR</div>
                 </div>
 
-                <div className="p-4 bg-indigo-950/20 border border-indigo-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Branded Avg Position</div>
-                  <div className="text-xl font-bold text-white mt-1">#{research.brandAvgPosition}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Prev: #{research.prevBrandAvgPosition}</div>
-                  <div className="text-[10px] text-slate-400 mt-1">{research.brandQueriesCount} active queries</div>
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Branded Avg Position</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">#{research.brandAvgPosition}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Prev: #{research.prevBrandAvgPosition}</div>
+                  <div className="text-[10px] text-slate-500 mt-1">{research.brandQueriesCount} active queries</div>
                 </div>
               </div>
 
               {/* Branded Losing Queries Table */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-purple-600" />
                     Branded Search Queries Performance & Decline
                   </h4>
-                  <span className="text-[11px] text-slate-400">{brandedQueries.length} branded queries tracked</span>
+                  <span className="text-[11px] text-slate-500">{brandedQueries.length} branded queries tracked</span>
                 </div>
 
                 {brandedQueries.length === 0 ? (
-                  <div className="p-8 bg-white/5 rounded-2xl border border-white/10 text-center text-xs text-slate-400">
+                  <div className="p-8 bg-white rounded-2xl border border-slate-200 text-center text-xs text-slate-500 shadow-xs">
                     No individual branded queries suffered significant drop over this period.
                   </div>
                 ) : (
-                  <div className="border border-white/10 rounded-2xl overflow-hidden bg-white/5">
+                  <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-white/5 text-slate-400 border-b border-white/10 text-[10px] font-bold uppercase tracking-wider">
+                      <thead className="bg-slate-100 text-slate-600 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider">
                         <tr>
                           <th className="py-3 px-4">Branded Query</th>
                           <th className="py-3 px-3 text-right">Previous Clicks</th>
@@ -473,17 +473,17 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                           <th className="py-3 px-3 text-right">Cur Pos</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5 bg-transparent">
+                      <tbody className="divide-y divide-slate-100 bg-white">
                         {brandedQueries.map((q, idx) => (
-                          <tr key={idx} className="hover:bg-white/5 transition-colors">
-                            <td className="py-3 px-4 font-semibold text-indigo-300">{q.query}</td>
-                            <td className="py-3 px-3 text-right text-slate-400 font-mono">{q.previousClicks}</td>
-                            <td className="py-3 px-3 text-right text-slate-200 font-mono">{q.currentClicks}</td>
+                          <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                            <td className="py-3 px-4 font-bold text-blue-700">{q.query}</td>
+                            <td className="py-3 px-3 text-right text-slate-500 font-mono">{q.previousClicks}</td>
+                            <td className="py-3 px-3 text-right text-slate-900 font-mono font-bold">{q.currentClicks}</td>
                             <td className="py-3 px-3 text-right">
-                              <span className="font-bold text-amber-400 font-mono">-{q.clickLoss}</span>
+                              <span className="font-bold text-amber-600 font-mono">-{q.clickLoss}</span>
                             </td>
-                            <td className="py-3 px-3 text-right text-slate-400 font-mono">#{q.previousPosition}</td>
-                            <td className="py-3 px-3 text-right font-bold text-indigo-300 font-mono">#{q.currentPosition}</td>
+                            <td className="py-3 px-3 text-right text-slate-500 font-mono">#{q.previousPosition}</td>
+                            <td className="py-3 px-3 text-right font-bold text-blue-600 font-mono">#{q.currentPosition}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -501,57 +501,57 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
               
               {/* Non-Branded KPI Strip */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-4 bg-purple-950/20 border border-purple-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-purple-300 uppercase tracking-wider">Non-Brand Clicks</div>
-                  <div className="text-xl font-bold text-white mt-1">{research.nonBrandClicks.toLocaleString()}</div>
-                  <div className="text-xs text-rose-400 font-medium mt-0.5">
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Non-Brand Clicks</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{research.nonBrandClicks.toLocaleString()}</div>
+                  <div className="text-xs text-rose-600 font-bold mt-0.5">
                     -{research.nonBrandLoss} ({research.nonBrandLossPct}% drop)
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-1">Prev: {research.prevNonBrandClicks.toLocaleString()} clicks</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Prev: {research.prevNonBrandClicks.toLocaleString()} clicks</div>
                 </div>
 
-                <div className="p-4 bg-purple-950/20 border border-purple-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-purple-300 uppercase tracking-wider">Non-Brand Impressions</div>
-                  <div className="text-xl font-bold text-white mt-1">{research.nonBrandImpressions.toLocaleString()}</div>
-                  <div className="text-xs text-slate-300 font-medium mt-0.5">
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Non-Brand Impressions</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{research.nonBrandImpressions.toLocaleString()}</div>
+                  <div className="text-xs text-slate-700 font-medium mt-0.5">
                     Prev: {research.prevNonBrandImpressions.toLocaleString()}
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-1">Loss: -{research.nonBrandImpLoss.toLocaleString()} ({research.nonBrandImpLossPct}%)</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Loss: -{research.nonBrandImpLoss.toLocaleString()} ({research.nonBrandImpLossPct}%)</div>
                 </div>
 
-                <div className="p-4 bg-purple-950/20 border border-purple-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-purple-300 uppercase tracking-wider">Non-Brand CTR</div>
-                  <div className="text-xl font-bold text-white mt-1">{research.nonBrandCtr}%</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Prev: {research.prevNonBrandCtr}%</div>
-                  <div className="text-[10px] text-slate-400 mt-1">Generic search CTR</div>
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Non-Brand CTR</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">{research.nonBrandCtr}%</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Prev: {research.prevNonBrandCtr}%</div>
+                  <div className="text-[10px] text-slate-500 mt-1">Generic search CTR</div>
                 </div>
 
-                <div className="p-4 bg-purple-950/20 border border-purple-500/30 rounded-2xl">
-                  <div className="text-[10px] font-bold text-purple-300 uppercase tracking-wider">Non-Brand Avg Position</div>
-                  <div className="text-xl font-bold text-white mt-1">#{research.nonBrandAvgPosition}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Prev: #{research.prevNonBrandAvgPosition}</div>
-                  <div className="text-[10px] text-slate-400 mt-1">{research.nonBrandQueriesCount} active queries</div>
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+                  <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Non-Brand Avg Position</div>
+                  <div className="text-xl font-bold text-slate-900 mt-1">#{research.nonBrandAvgPosition}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Prev: #{research.prevNonBrandAvgPosition}</div>
+                  <div className="text-[10px] text-slate-500 mt-1">{research.nonBrandQueriesCount} active queries</div>
                 </div>
               </div>
 
               {/* Non-Branded Losing Queries Table */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                    <Search className="w-4 h-4 text-purple-400" />
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <Search className="w-4 h-4 text-purple-600" />
                     Non-Branded Search Queries Performance & SERP Displacement
                   </h4>
-                  <span className="text-[11px] text-slate-400">{nonBrandedQueries.length} generic queries tracked</span>
+                  <span className="text-[11px] text-slate-500">{nonBrandedQueries.length} generic queries tracked</span>
                 </div>
 
                 {nonBrandedQueries.length === 0 ? (
-                  <div className="p-8 bg-white/5 rounded-2xl border border-white/10 text-center text-xs text-slate-400">
+                  <div className="p-8 bg-white rounded-2xl border border-slate-200 text-center text-xs text-slate-500 shadow-xs">
                     No individual non-branded queries suffered significant drop over this period.
                   </div>
                 ) : (
-                  <div className="border border-white/10 rounded-2xl overflow-hidden bg-white/5">
+                  <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-white/5 text-slate-400 border-b border-white/10 text-[10px] font-bold uppercase tracking-wider">
+                      <thead className="bg-slate-100 text-slate-600 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider">
                         <tr>
                           <th className="py-3 px-4">Non-Branded Query</th>
                           <th className="py-3 px-3 text-right">Previous Clicks</th>
@@ -561,17 +561,17 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                           <th className="py-3 px-3 text-right">Cur Pos</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5 bg-transparent">
+                      <tbody className="divide-y divide-slate-100 bg-white">
                         {nonBrandedQueries.map((q, idx) => (
-                          <tr key={idx} className="hover:bg-white/5 transition-colors">
-                            <td className="py-3 px-4 font-semibold text-slate-100">{q.query}</td>
-                            <td className="py-3 px-3 text-right text-slate-400 font-mono">{q.previousClicks}</td>
-                            <td className="py-3 px-3 text-right text-slate-200 font-mono">{q.currentClicks}</td>
+                          <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                            <td className="py-3 px-4 font-bold text-slate-900">{q.query}</td>
+                            <td className="py-3 px-3 text-right text-slate-500 font-mono">{q.previousClicks}</td>
+                            <td className="py-3 px-3 text-right text-slate-900 font-mono font-bold">{q.currentClicks}</td>
                             <td className="py-3 px-3 text-right">
-                              <span className="font-bold text-rose-400 font-mono">-{q.clickLoss}</span>
+                              <span className="font-bold text-rose-600 font-mono">-{q.clickLoss}</span>
                             </td>
-                            <td className="py-3 px-3 text-right text-slate-400 font-mono">#{q.previousPosition}</td>
-                            <td className="py-3 px-3 text-right font-bold text-amber-300 font-mono">#{q.currentPosition}</td>
+                            <td className="py-3 px-3 text-right text-slate-500 font-mono">#{q.previousPosition}</td>
+                            <td className="py-3 px-3 text-right font-bold text-amber-600 font-mono">#{q.currentPosition}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -589,17 +589,17 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
               
               {/* Primary Diagnostic Factor Banner */}
               {research && (
-                <div className="p-5 bg-gradient-to-r from-indigo-950/60 to-slate-900/80 border border-indigo-500/30 rounded-2xl space-y-2">
+                <div className="p-5 bg-blue-50 border border-blue-200 rounded-2xl space-y-2 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <div className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-indigo-400" />
+                    <div className="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-purple-600" />
                       Root-Cause Diagnosis: {research.primaryFactorLabel}
                     </div>
-                    <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200 uppercase">
                       Deterministic Confidence
                     </span>
                   </div>
-                  <p className="text-xs text-slate-200 leading-relaxed font-normal">
+                  <p className="text-xs text-slate-700 leading-relaxed font-medium">
                     {research.factorExplanation}
                   </p>
                 </div>
@@ -607,18 +607,18 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
 
               {/* SERP Features & Layout Shift Displacements */}
               {research && research.serpFeatureShifts.length > 0 && (
-                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2">
-                  <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                    <ShieldAlert className="w-4 h-4 text-amber-400" />
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl space-y-2 shadow-xs">
+                  <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <ShieldAlert className="w-4 h-4 text-amber-600" />
                     Detected SERP Feature Displacements & Competition
                   </div>
                   <div className="flex flex-wrap gap-2 pt-1">
                     {research.serpFeatureShifts.map((shift, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 bg-white/5 border border-amber-500/30 text-amber-200 rounded-xl text-xs font-medium flex items-center gap-1.5"
+                        className="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-bold flex items-center gap-1.5"
                       >
-                        <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
+                        <AlertTriangle className="w-3 h-3 text-amber-600 shrink-0" />
                         <span>{shift}</span>
                       </span>
                     ))}
@@ -630,16 +630,16 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                       Recommended Remediation Checklist
                     </h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
+                    <p className="text-[11px] text-slate-500 mt-0.5">
                       Targeted interventions generated by the root-cause diagnostics engine.
                     </p>
                   </div>
                   <button
                     onClick={() => setShowTaskForm(true)}
-                    className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all"
+                    className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all"
                   >
                     <PlusCircle className="w-3.5 h-3.5" />
                     <span>Create Custom Task</span>
@@ -651,28 +651,28 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                     {research.actionPlan.map((plan, idx) => (
                       <div
                         key={idx}
-                        className="p-4 bg-white/5 border border-white/10 hover:border-indigo-500/40 rounded-2xl flex items-start justify-between gap-4 transition-all"
+                        className="p-4 bg-white border border-slate-200 hover:border-blue-300 rounded-2xl flex items-start justify-between gap-4 transition-all shadow-xs"
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-white">{plan.title}</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
+                            <span className="text-xs font-bold text-slate-900">{plan.title}</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">
                               {plan.category}
                             </span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${
                               plan.priority === 'critical'
-                                ? 'bg-rose-500/20 text-rose-300'
-                                : 'bg-amber-500/20 text-amber-300'
+                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                : 'bg-amber-50 text-amber-700 border border-amber-200'
                             }`}>
                               {plan.priority} Priority
                             </span>
                           </div>
-                          <p className="text-xs text-slate-300 leading-relaxed">{plan.action}</p>
+                          <p className="text-xs text-slate-600 leading-relaxed">{plan.action}</p>
                         </div>
 
                         <button
                           onClick={() => handleQuickAddPlanItem(plan)}
-                          className="shrink-0 px-3 py-1.5 bg-white/5 hover:bg-indigo-600 border border-white/10 hover:border-transparent text-indigo-300 hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1"
+                          className="shrink-0 px-3 py-1.5 bg-blue-50 hover:bg-blue-600 border border-blue-200 hover:border-transparent text-blue-700 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1"
                         >
                           <PlusCircle className="w-3.5 h-3.5" />
                           <span>Schedule Task</span>
@@ -685,39 +685,39 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
 
               {/* Custom Task Creation Form Drawer */}
               {showTaskForm && (
-                <form onSubmit={handleCreateActivity} className="p-5 bg-[#080d1e] border border-indigo-500/40 rounded-2xl space-y-3 shadow-2xl animate-in fade-in duration-150">
+                <form onSubmit={handleCreateActivity} className="p-5 bg-white border border-blue-300 rounded-2xl space-y-3 shadow-xl animate-in fade-in duration-150">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                      <ActivityIcon className="w-4 h-4 text-indigo-400" />
+                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <ActivityIcon className="w-4 h-4 text-blue-600" />
                       Plan Activity for Current Month
                     </h4>
                     <button
                       type="button"
                       onClick={() => setShowTaskForm(false)}
-                      className="text-xs text-slate-400 hover:text-white transition-colors"
+                      className="text-xs text-slate-400 hover:text-slate-700 font-bold transition-colors"
                     >
                       Cancel
                     </button>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Task Title</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Task Title</label>
                     <input
                       type="text"
                       value={taskTitle}
                       onChange={e => setTaskTitle(e.target.value)}
-                      className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white focus:border-indigo-400 focus:outline-none"
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
                       required
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">Activity Type</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Activity Type</label>
                       <select
                         value={taskType}
                         onChange={e => setTaskType(e.target.value as ActivityType)}
-                        className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs text-white focus:border-indigo-400 focus:outline-none"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
                       >
                         <option value="content_refresh">Content Refresh</option>
                         <option value="title_meta_improvement">Title & Meta Improvement</option>
@@ -728,11 +728,11 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">Priority</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Priority</label>
                       <select
                         value={taskPriority}
                         onChange={e => setTaskPriority(e.target.value as any)}
-                        className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs text-white focus:border-indigo-400 focus:outline-none"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
                       >
                         <option value="critical">Critical</option>
                         <option value="high">High</option>
@@ -742,23 +742,23 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">Due Date</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Due Date</label>
                       <input
                         type="date"
                         value={taskDueDate}
                         onChange={e => setTaskDueDate(e.target.value)}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white focus:border-indigo-400 focus:outline-none"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Implementation Notes</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Implementation Notes</label>
                     <textarea
                       value={taskNotes}
                       onChange={e => setTaskNotes(e.target.value)}
                       rows={2}
-                      className="w-full px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white focus:border-indigo-400 focus:outline-none"
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
                     />
                   </div>
 
@@ -766,11 +766,11 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
                     <button
                       type="submit"
                       disabled={isSaved}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all"
                     >
                       {isSaved ? (
                         <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                           <span>Saved to Activity Board!</span>
                         </>
                       ) : (
@@ -787,13 +787,13 @@ export const PageDetailModal: React.FC<PageDetailModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-3.5 border-t border-white/10 bg-slate-950/60 flex items-center justify-between shrink-0">
-          <div className="text-[11px] text-slate-400">
-            Path: <span className="font-mono text-slate-300">{item.cleanPath}</span>
+        <div className="px-6 py-3.5 border-t border-slate-200 bg-slate-50 rounded-b-3xl flex items-center justify-between shrink-0">
+          <div className="text-[11px] text-slate-500">
+            Path: <span className="font-mono text-slate-800 font-bold">{item.cleanPath}</span>
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-medium rounded-xl transition-colors"
+            className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition-colors"
           >
             Close Diagnosis
           </button>

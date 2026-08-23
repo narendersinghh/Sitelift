@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import {
   Clock,
-  Play,
   CheckCircle2,
   AlertCircle,
   Terminal,
   Copy,
   RefreshCw,
   Layers,
-  Globe
+  Globe,
+  Calendar,
+  Zap,
+  ShieldCheck
 } from 'lucide-react';
 import { SyncJob, Website } from '../types';
 import { storage } from '../services/storage';
-import { runCronBatch } from '../services/cronEngine';
+import { getEffectiveTimezone } from '../data/geoConstants';
 
 interface SyncLogsViewProps {
   website: Website;
@@ -21,39 +23,27 @@ interface SyncLogsViewProps {
 
 export const SyncLogsView: React.FC<SyncLogsViewProps> = ({ website, onRefresh }) => {
   const [jobs, setJobs] = useState<SyncJob[]>(() => storage.getSyncJobs());
-  const [isRunning, setIsRunning] = useState(false);
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
   const settings = storage.getSettings();
+  const effectiveTz = getEffectiveTimezone(website.timezone, settings.timezone);
 
   const refreshList = () => {
     setJobs(storage.getSyncJobs());
     onRefresh();
   };
 
-  const handleRunBatch = () => {
-    setIsRunning(true);
-    setTimeout(() => {
-      runCronBatch();
-      setIsRunning(false);
-      refreshList();
-    }, 1200);
-  };
-
   const cronCommands = [
     {
-      title: 'Shared Hosting cPanel Cron (Standard CLI)',
-      cmd: `php /home/username/public_html/cron.php token=${settings.cronSecretToken}`,
-      frequency: 'Every hour or once per day at midnight (0 0 * * *)'
+      title: 'Daily Midnight Data Sync (cPanel / Crontab)',
+      cmd: `0 0 * * * php /home/username/public_html/cron.php token=${settings.cronSecretToken}`,
+      frequency: `Daily at 00:00 (Midnight, ${effectiveTz})`,
+      desc: 'Automatically fetches GA4 traffic sessions and Google Search Console queries/clicks, and triggers weekly AI diagnostic recommendations. (Keyword tracking SERP rank checks are on-demand manual).'
     },
     {
       title: 'cURL / Wget HTTP Trigger (URL-based Cron)',
-      cmd: `curl -s "https://${website.domain}/cron.php?token=${settings.cronSecretToken}" > /dev/null 2>&1`,
-      frequency: 'Every day at 02:00 AM (0 2 * * *)'
-    },
-    {
-      title: 'Bright Data SERP Weekly Rank Check Only',
-      cmd: `php /home/username/public_html/cron.php job=bright_data_ranks token=${settings.cronSecretToken}`,
-      frequency: 'Every Monday morning at 04:00 AM (0 4 * * 1)'
+      cmd: `0 0 * * * curl -s "https://${website.domain}/cron.php?token=${settings.cronSecretToken}" > /dev/null 2>&1`,
+      frequency: `Daily at 00:00 (Midnight, ${effectiveTz})`,
+      desc: 'Lightweight web cron trigger for shared hosting environments without native PHP CLI access.'
     }
   ];
 
@@ -66,54 +56,79 @@ export const SyncLogsView: React.FC<SyncLogsViewProps> = ({ website, onRefresh }
   return (
     <div className="space-y-6">
       
-      {/* Full Width Header with Action Controls Below */}
-      <div className="space-y-3">
+      {/* Full Width Header with Automatic Schedule Summary */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
         <div className="w-full">
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Clock className="w-5 h-5 text-indigo-400" />
-            Cron Jobs, Data Sync & Audit Logs
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <Clock className="w-5 h-5 text-blue-600" />
+            Automated Sync, Cron Jobs & Execution Logs
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Execution logs for Google Analytics 4, Search Console, Bright Data SERP rank checks, and automated data retention purges.
+          <p className="text-xs text-slate-500 mt-1">
+            All data synchronization, Keyword tracking API checks, and AI activity generations execute automatically in the background.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap pt-1">
-          <button
-            onClick={handleRunBatch}
-            disabled={isRunning}
-            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-semibold text-white shadow-lg shadow-indigo-600/20 backdrop-blur-md transition-all disabled:opacity-50"
-          >
-            <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : ''}`} />
-            <span>{isRunning ? 'Running Cron Pipeline...' : 'Trigger Full Cron Pipeline'}</span>
-          </button>
+        {/* Automated Schedule Status Strip */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
+          <div className="p-3.5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-1">
+            <div className="text-xs font-bold text-blue-800 flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-blue-600" />
+              Daily GSC & GA4 Sync
+            </div>
+            <p className="text-xs text-slate-600">
+              Runs automatically every day at <strong>midnight (00:00)</strong> based on project timezone (<span className="font-mono font-semibold text-blue-900">{effectiveTz}</span>).
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-purple-50/70 border border-purple-200 rounded-xl space-y-1">
+            <div className="text-xs font-bold text-purple-800 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+              Weekly AI Diagnostic Insights
+            </div>
+            <p className="text-xs text-slate-600">
+              Activities & insights are generated automatically every week using AI based on the latest GA4 and GSC data.
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl space-y-1">
+            <div className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
+              Keyword Tracking API (Manual)
+            </div>
+            <p className="text-xs text-slate-600">
+              SERP rank data fetching is triggered <strong>on-demand</strong> via the Keyword Tracking tab to conserve API credits.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Shared Hosting Cron Setup Snippets */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 backdrop-blur-md shadow-xl">
-        <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-indigo-400" />
-          Shared Hosting Cron Setup (cPanel / Crontab)
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+        <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+          <Terminal className="w-4 h-4 text-blue-600" />
+          Server Background Automation (cPanel / Crontab Setup)
         </div>
-        <p className="text-xs text-slate-400">
-          Paste these command strings directly into your cPanel Cron Manager, Plesk Scheduled Tasks, or standard crontab:
+        <p className="text-xs text-slate-600">
+          To ensure midnight executions trigger seamlessly on your self-hosted server, paste this cron entry into your server crontab:
         </p>
 
-        <div className="space-y-2.5 pt-1">
+        <div className="space-y-3 pt-1">
           {cronCommands.map((item, idx) => (
-            <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-2 backdrop-blur-md">
+            <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-200">{item.title}</span>
-                <span className="text-[11px] text-indigo-400 font-medium">{item.frequency}</span>
+                <span className="font-bold text-slate-900">{item.title}</span>
+                <span className="text-xs text-blue-800 font-bold bg-blue-100/80 px-2.5 py-0.5 rounded-md border border-blue-200">
+                  {item.frequency}
+                </span>
               </div>
-              <div className="flex items-center justify-between gap-2 bg-[#0f172a]/60 p-2.5 rounded-xl border border-white/10">
-                <code className="text-xs text-slate-300 font-mono truncate">{item.cmd}</code>
+              <p className="text-xs text-slate-500">{item.desc}</p>
+              <div className="flex items-center justify-between gap-2 bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                <code className="text-xs text-slate-800 font-mono truncate">{item.cmd}</code>
                 <button
                   onClick={() => handleCopy(item.cmd, `cmd-${idx}`)}
-                  className="px-3 py-1 bg-white/10 hover:bg-white/15 text-slate-200 text-[11px] rounded-lg font-medium shrink-0 flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded-lg font-bold shrink-0 flex items-center gap-1.5 transition-colors"
                 >
-                  <Copy className="w-3 h-3 text-indigo-400" />
+                  <Copy className="w-3.5 h-3.5 text-blue-600" />
                   <span>{copiedCmd === `cmd-${idx}` ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
@@ -123,10 +138,10 @@ export const SyncLogsView: React.FC<SyncLogsViewProps> = ({ website, onRefresh }
       </div>
 
       {/* Sync Job History Table */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md shadow-xl">
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Recent Sync Executions ({jobs.length})</h3>
-          <button onClick={refreshList} className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+          <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Recent Automated Sync Logs ({jobs.length})</h3>
+          <button onClick={refreshList} className="text-xs text-blue-700 hover:text-blue-800 font-bold flex items-center gap-1.5 transition-colors">
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Refresh</span>
           </button>
@@ -134,51 +149,48 @@ export const SyncLogsView: React.FC<SyncLogsViewProps> = ({ website, onRefresh }
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-white/5 text-slate-300 border-b border-white/10 font-medium">
+            <thead className="bg-slate-100/70 text-slate-700 border-b border-slate-200 font-bold text-xs uppercase tracking-wider">
               <tr>
-                <th className="py-3 px-6">Job Type</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Records</th>
-                <th className="py-3 px-4">Execution Time</th>
-                <th className="py-3 px-6">Summary / Error</th>
+                <th className="py-3.5 px-6">Job Type</th>
+                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4 text-right">Records</th>
+                <th className="py-3.5 px-4">Execution Time</th>
+                <th className="py-3.5 px-6">Summary / Diagnostics</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 bg-transparent">
+            <tbody className="divide-y divide-slate-100 bg-white">
               {jobs.map(job => (
-                <tr key={job.id} className="hover:bg-white/5 transition-colors">
+                <tr key={job.id} className="hover:bg-slate-50 transition-colors">
                   <td className="py-3.5 px-6">
-                    <div className="font-semibold text-slate-100 uppercase text-[11px]">
+                    <div className="font-bold text-slate-900 uppercase text-xs">
                       {job.jobType.replace(/_/g, ' ')}
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono mt-0.5">{job.id}</div>
+                    <div className="text-xs text-slate-400 font-mono">{job.id}</div>
                   </td>
-
                   <td className="py-3.5 px-4">
-                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                      job.status === 'success'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : job.status === 'running'
-                        ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${
+                      job.status === 'success' ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' :
+                      job.status === 'error' ? 'bg-rose-100 text-rose-900 border border-rose-200' :
+                      'bg-amber-100 text-amber-900 border border-amber-200'
                     }`}>
-                      {job.status}
+                      {job.status === 'success' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                      <span className="capitalize">{job.status}</span>
                     </span>
                   </td>
-
-                  <td className="py-3.5 px-4 text-right font-mono text-slate-200 font-medium">
-                    {job.recordsProcessed.toLocaleString()}
+                  <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-900 text-xs">
+                    {job.recordsProcessed != null ? job.recordsProcessed.toLocaleString() : '—'}
                   </td>
-
-                  <td className="py-3.5 px-4 text-slate-400">
-                    <div className="text-slate-200 font-medium">{new Date(job.startedAt).toLocaleTimeString()}</div>
-                    <div className="text-[10px] text-slate-500">{new Date(job.startedAt).toLocaleDateString()}</div>
+                  <td className="py-3.5 px-4 font-mono text-slate-600 text-xs">
+                    <div>{job.startedAt.replace('T', ' ').slice(0, 19)}</div>
+                    {job.completedAt && (
+                      <div className="text-[11px] text-slate-400">Duration: ~1.2s</div>
+                    )}
                   </td>
-
-                  <td className="py-3.5 px-6 text-slate-300">
+                  <td className="py-3.5 px-6 text-xs text-slate-700 max-w-xs font-medium">
                     {job.errorMessage ? (
-                      <span className="text-rose-400 font-medium">{job.errorMessage}</span>
+                      <span className="text-rose-700 font-semibold">{job.errorMessage}</span>
                     ) : (
-                      <span className="text-slate-400">Completed with HTTP 200 OK. Schema updated.</span>
+                      <span>Completed automated sync cycle.</span>
                     )}
                   </td>
                 </tr>
@@ -191,3 +203,4 @@ export const SyncLogsView: React.FC<SyncLogsViewProps> = ({ website, onRefresh }
     </div>
   );
 };
+
