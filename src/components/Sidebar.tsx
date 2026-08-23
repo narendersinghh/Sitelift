@@ -90,15 +90,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         {
           id: 'dashboard',
-          label: 'Overview Dashboard',
+          label: 'Overview',
           icon: BarChart3
         },
         {
-          id: 'optimization_pipeline',
-          label: 'Optimization Pipeline',
-          icon: TrendingUp,
-          badge: pipelineWinsCount > 0 ? `${pipelineWinsCount} wins` : pipelineTotalUrls > 0 ? `${pipelineTotalUrls}` : undefined,
-          badgeColor: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+          id: 'all_pages',
+          label: 'All Pages',
+          icon: FileText
         },
         {
           id: 'declining_pages',
@@ -108,9 +106,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badgeColor: 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
         },
         {
-          id: 'all_pages',
-          label: 'All Pages',
-          icon: FileText
+          id: 'optimization_pipeline',
+          label: 'Opt. Pipeline',
+          icon: TrendingUp,
+          badge: pipelineWinsCount > 0 ? `${pipelineWinsCount} wins` : pipelineTotalUrls > 0 ? `${pipelineTotalUrls}` : undefined,
+          badgeColor: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
         },
         {
           id: 'keywords',
@@ -358,9 +358,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {sidebarContent}
       </aside>
 
-      {/* Desktop Sticky Sidebar (Locked sticky top-0 h-screen, scrollable internally) */}
+      {/* Desktop Sticky Sidebar (Locked full height, scrollable internally) */}
       <aside
-        className={`hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-[#0f172a]/90 border-r border-white/10 backdrop-blur-2xl z-30 transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`hidden lg:flex flex-col shrink-0 h-full bg-[#0f172a] border-r border-white/10 z-30 transition-all duration-300 ease-in-out overflow-hidden ${
           isCollapsed ? 'w-20' : 'w-64'
         }`}
       >

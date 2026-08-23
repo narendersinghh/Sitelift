@@ -166,9 +166,9 @@ export const ActivitiesView: React.FC<ActivitiesViewProps> = ({ website }) => {
   return (
     <div className="space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      {/* Full Width Header with Controls Below */}
+      <div className="space-y-3">
+        <div className="w-full">
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <ActivityIcon className="w-5 h-5 text-indigo-400" />
             Monthly SEO Activity Planner
@@ -178,7 +178,7 @@ export const ActivitiesView: React.FC<ActivitiesViewProps> = ({ website }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap pt-1">
           {/* Month Selector */}
           <select
             value={selectedMonth}

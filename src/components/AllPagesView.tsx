@@ -201,8 +201,8 @@ export const AllPagesView: React.FC<AllPagesViewProps> = ({
     <div className="space-y-6">
       
       {/* View Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
+      <div className="space-y-3">
+        <div className="w-full">
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <Layers className="w-5 h-5 text-indigo-400" />
             Submitted Pages & Index Coverage
@@ -212,11 +212,20 @@ export const AllPagesView: React.FC<AllPagesViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs font-semibold text-emerald-300 flex items-center gap-1.5">
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          <div className="px-3.5 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs font-semibold text-emerald-300 flex items-center gap-1.5 backdrop-blur-md">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>{indexCoveragePct}% Index Coverage ({indexedCount}/{totalCount})</span>
+            <span>{indexCoveragePct}% Index Coverage ({indexedCount}/{totalCount} URLs Indexed)</span>
           </div>
+          {onOpenActivityPlanner && (
+            <button
+              onClick={onOpenActivityPlanner}
+              className="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-semibold text-slate-200 backdrop-blur-md transition-all flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Activity Planner</span>
+            </button>
+          )}
         </div>
       </div>
 

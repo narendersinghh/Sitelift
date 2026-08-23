@@ -117,9 +117,9 @@ export const InsightsView: React.FC<InsightsViewProps> = ({ website, onNavigateT
   return (
     <div className="space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      {/* Full Width Header with Action Controls Below */}
+      <div className="space-y-3">
+        <div className="w-full">
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-indigo-400" />
             Rule-Based Insight Generator
@@ -129,7 +129,7 @@ export const InsightsView: React.FC<InsightsViewProps> = ({ website, onNavigateT
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap pt-1">
           <button
             onClick={handleRunEngine}
             disabled={isScanning}

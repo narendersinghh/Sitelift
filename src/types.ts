@@ -198,7 +198,7 @@ export interface KeywordRankSnapshot {
   serpFeatures?: string[];
 }
 
-export type MatchType = 'contains' | 'starts_with' | 'ends_with' | 'regex';
+export type MatchType = 'contains' | 'starts_with' | 'ends_with' | 'regex' | 'exact' | 'glob' | 'query_param';
 
 export interface CategoryRule {
   id: string;

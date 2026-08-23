@@ -25,6 +25,60 @@ export interface DecliningPagesFilterOptions {
 }
 
 /**
+ * Matches a string against pattern with given MatchType
+ */
+export function evaluateRuleMatch(
+  value: string,
+  pattern: string,
+  matchType: 'contains' | 'starts_with' | 'ends_with' | 'regex' | 'exact' | 'glob' | 'query_param'
+): boolean {
+  if (!value || !pattern) return false;
+  const v = value.trim().toLowerCase();
+  const p = pattern.trim().toLowerCase();
+
+  switch (matchType) {
+    case 'contains':
+      return v.includes(p);
+    case 'starts_with':
+      return v.startsWith(p);
+    case 'ends_with':
+      return v.endsWith(p);
+    case 'exact':
+      return v === p;
+    case 'glob': {
+      try {
+        // Convert glob wildcard * to .* and ? to .
+        const escaped = p.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
+        return new RegExp(`^${escaped}$`, 'i').test(v);
+      } catch {
+        return v.includes(p.replace(/\*/g, ''));
+      }
+    }
+    case 'query_param': {
+      // Check query parameter match e.g. "category=seo" or "utm_source"
+      try {
+        if (p.includes('=')) {
+          const [key, expectedVal] = p.split('=');
+          return v.includes(`${key.trim()}=${expectedVal?.trim()}`);
+        }
+        return v.includes(`?${p}`) || v.includes(`&${p}`);
+      } catch {
+        return v.includes(p);
+      }
+    }
+    case 'regex': {
+      try {
+        return new RegExp(pattern.trim(), 'i').test(value);
+      } catch {
+        return false;
+      }
+    }
+    default:
+      return v.includes(p);
+  }
+}
+
+/**
  * Evaluates the website's per-property Category Rules to classify any URL path
  */
 export function resolvePageCategory(
@@ -38,22 +92,29 @@ export function resolvePageCategory(
 
   for (const r of activeRules) {
     if (r.targetType !== 'url') continue;
-    const targetVal = (r.pattern.startsWith('http') ? fullUrl : cleanPath).toLowerCase();
-    const pattern = r.pattern.toLowerCase();
-    let matched = false;
-
-    if (r.matchType === 'contains' && targetVal.includes(pattern)) matched = true;
-    if (r.matchType === 'starts_with' && targetVal.startsWith(pattern)) matched = true;
-    if (r.matchType === 'ends_with' && targetVal.endsWith(pattern)) matched = true;
-    if (r.matchType === 'regex') {
-      try {
-        if (new RegExp(r.pattern, 'i').test(targetVal)) matched = true;
-      } catch {
-        // ignore regex error
-      }
+    const targetVal = r.pattern.startsWith('http') || r.matchType === 'query_param' ? fullUrl : cleanPath;
+    if (evaluateRuleMatch(targetVal, r.pattern, r.matchType)) {
+      return r.category || fallbackCategory;
     }
+  }
 
-    if (matched) {
+  return fallbackCategory;
+}
+
+/**
+ * Evaluates the website's per-property Category Rules to classify keywords/queries
+ */
+export function resolveKeywordCategory(
+  keywordOrQuery: string,
+  websiteId: string,
+  fallbackCategory: string = 'General'
+): string {
+  const rules = storage.getCategoryRules(websiteId);
+  const activeRules = rules.filter(r => r.isActive !== false).sort((a, b) => a.priority - b.priority);
+
+  for (const r of activeRules) {
+    if (r.targetType !== 'keyword' && r.targetType !== 'query') continue;
+    if (evaluateRuleMatch(keywordOrQuery, r.pattern, r.matchType)) {
       return r.category || fallbackCategory;
     }
   }

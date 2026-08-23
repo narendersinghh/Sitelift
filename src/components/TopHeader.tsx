@@ -115,7 +115,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0f172a]/90 border-b border-white/10 backdrop-blur-2xl px-4 sm:px-6 lg:px-8 py-3 transition-all">
+    <header className="sticky top-0 z-40 shrink-0 bg-[#0f172a]/95 border-b border-white/10 backdrop-blur-2xl px-4 sm:px-6 lg:px-8 py-3 transition-all">
       <div className="flex items-center justify-between gap-4">
         
         {/* Left Side: Mobile Hamburger & Current View Breadcrumbs */}

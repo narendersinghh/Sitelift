@@ -46,6 +46,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
   const [brandFilter, setBrandFilter] = useState('all');
   const [deviceFilter, setDeviceFilter] = useState('all');
   const [countryFilter, setCountryFilter] = useState('all');
+  const [rankTrendFilter, setRankTrendFilter] = useState<'all' | 'improved' | 'declined' | 'stable'>('all');
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCsvModal, setShowCsvModal] = useState(false);
@@ -86,6 +87,18 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
     if (countryFilter !== 'all' && (kw.country || 'IN') !== countryFilter) return false;
     if (brandFilter === 'branded' && !kw.isBranded) return false;
     if (brandFilter === 'non_branded' && kw.isBranded) return false;
+    
+    // Rank Movement / Trend Filter
+    if (rankTrendFilter === 'improved') {
+      if (!kw.currentRank || !kw.previousRank || kw.currentRank >= kw.previousRank) return false;
+    } else if (rankTrendFilter === 'declined') {
+      if (!kw.currentRank || !kw.previousRank || kw.currentRank <= kw.previousRank) return false;
+    } else if (rankTrendFilter === 'stable') {
+      // Stable means rank is tracked and hasn't changed or has 0 delta
+      if (!kw.currentRank) return false;
+      if (kw.previousRank != null && kw.currentRank !== kw.previousRank) return false;
+    }
+
     if (searchQuery && !kw.keyword.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
@@ -96,6 +109,7 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
   const top10 = activeKeywords.filter(k => k.currentRank && k.currentRank <= 10).length;
   const rankGains = activeKeywords.filter(k => k.currentRank && k.previousRank && k.currentRank < k.previousRank).length;
   const rankDrops = activeKeywords.filter(k => k.currentRank && k.previousRank && k.currentRank > k.previousRank).length;
+  const rankStable = activeKeywords.filter(k => k.currentRank && (k.previousRank == null || k.currentRank === k.previousRank)).length;
 
   // Single Add Handler
   const handleAddKeyword = (e: React.FormEvent) => {
@@ -266,9 +280,9 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
   return (
     <div className="space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      {/* Full Width Header with Action Controls Below */}
+      <div className="space-y-3">
+        <div className="w-full">
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <KeyRound className="w-5 h-5 text-indigo-400" />
             Keyword Tracking (Bright Data SERP Engine)
@@ -278,7 +292,8 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Action Buttons Row directly below Description */}
+        <div className="flex items-center gap-2 flex-wrap pt-1">
           <button
             onClick={handleRunRankCheck}
             disabled={isTracking || keywords.length === 0}
@@ -320,38 +335,81 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
         </div>
       </div>
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-          <div className="text-xs text-slate-400 font-semibold uppercase">Total Tracked</div>
-          <div className="text-2xl font-bold text-white mt-1">{activeKeywords.length}</div>
-          <div className="text-[11px] text-slate-400 mt-0.5">Active Keywords</div>
+      {/* Metric Cards (Clickable to Filter) */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div
+          onClick={() => setRankTrendFilter('all')}
+          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+            rankTrendFilter === 'all'
+              ? 'bg-indigo-600/20 border-indigo-500 shadow-md shadow-indigo-600/20'
+              : 'bg-white/5 border-white/10 hover:border-white/20'
+          }`}
+        >
+          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Total Tracked</div>
+          <div className="text-xl font-bold text-white mt-1">{activeKeywords.length}</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">All active keywords</div>
         </div>
 
-        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-          <div className="text-xs text-indigo-400 font-semibold uppercase">Top 3 & Top 10</div>
-          <div className="text-2xl font-bold text-white mt-1">
+        <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
+          <div className="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider">Top 3 & Top 10</div>
+          <div className="text-xl font-bold text-white mt-1">
             {top3} <span className="text-xs text-slate-400 font-normal">/ {top10}</span>
           </div>
-          <div className="text-[11px] text-indigo-300 mt-0.5">Top 3 / Top 10 Positions</div>
+          <div className="text-[10px] text-indigo-300 mt-0.5">Top 3 / Top 10 SERP</div>
         </div>
 
-        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-          <div className="text-xs text-emerald-400 font-semibold uppercase">Rank Gains</div>
-          <div className="text-2xl font-bold text-emerald-300 mt-1">+{rankGains}</div>
-          <div className="text-[11px] text-emerald-400/80 mt-0.5">Improved vs last crawl</div>
+        <div
+          onClick={() => setRankTrendFilter(rankTrendFilter === 'improved' ? 'all' : 'improved')}
+          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+            rankTrendFilter === 'improved'
+              ? 'bg-emerald-500/20 border-emerald-500 shadow-md shadow-emerald-500/20'
+              : 'bg-white/5 border-white/10 hover:border-emerald-500/40'
+          }`}
+        >
+          <div className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>Improved (↑)</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">Gains</span>
+          </div>
+          <div className="text-xl font-bold text-emerald-300 mt-1">+{rankGains}</div>
+          <div className="text-[10px] text-emerald-400/80 mt-0.5">Gained higher rank</div>
         </div>
 
-        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-          <div className="text-xs text-rose-400 font-semibold uppercase">Rank Drops</div>
-          <div className="text-2xl font-bold text-rose-300 mt-1">-{rankDrops}</div>
-          <div className="text-[11px] text-rose-400/80 mt-0.5">Displaced in SERP</div>
+        <div
+          onClick={() => setRankTrendFilter(rankTrendFilter === 'declined' ? 'all' : 'declined')}
+          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+            rankTrendFilter === 'declined'
+              ? 'bg-rose-500/20 border-rose-500 shadow-md shadow-rose-500/20'
+              : 'bg-white/5 border-white/10 hover:border-rose-500/40'
+          }`}
+        >
+          <div className="text-[10px] text-rose-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>Declined (↓)</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300">Drops</span>
+          </div>
+          <div className="text-xl font-bold text-rose-300 mt-1">-{rankDrops}</div>
+          <div className="text-[10px] text-rose-400/80 mt-0.5">Dropped in SERP</div>
+        </div>
+
+        <div
+          onClick={() => setRankTrendFilter(rankTrendFilter === 'stable' ? 'all' : 'stable')}
+          className={`p-3.5 rounded-2xl backdrop-blur-md border transition-all cursor-pointer ${
+            rankTrendFilter === 'stable'
+              ? 'bg-cyan-500/20 border-cyan-500 shadow-md shadow-cyan-500/20'
+              : 'bg-white/5 border-white/10 hover:border-cyan-500/40'
+          }`}
+        >
+          <div className="text-[10px] text-cyan-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>Stable (=)</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300">Neutral</span>
+          </div>
+          <div className="text-xl font-bold text-cyan-300 mt-1">{rankStable}</div>
+          <div className="text-[10px] text-cyan-400/80 mt-0.5">Position unchanged</div>
         </div>
       </div>
 
-      {/* Filters Bar */}
+      {/* Filters Bar with Rank Movement Filter */}
       <div className="p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-3">
           
           <div className="relative md:col-span-2">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -362,6 +420,19 @@ export const KeywordsView: React.FC<KeywordsViewProps> = ({ website, onRefresh }
               onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 backdrop-blur-md"
             />
+          </div>
+
+          <div>
+            <select
+              value={rankTrendFilter}
+              onChange={e => setRankTrendFilter(e.target.value as any)}
+              className="w-full px-3 py-2 bg-[#0f172a] border border-white/10 rounded-xl text-xs font-medium text-slate-200 focus:border-indigo-500 focus:outline-none"
+            >
+              <option value="all">All Movements</option>
+              <option value="improved">Improved (↑ Gains)</option>
+              <option value="declined">Declined (↓ Drops)</option>
+              <option value="stable">Stable (= No Change)</option>
+            </select>
           </div>
 
           <div>

@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+html,
+body,
+#root {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
 @layer utilities {
   .glass-card {
     background-color: rgba(255, 255, 255, 0.05);

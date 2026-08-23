@@ -151,9 +151,9 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'pa
   return (
     <div className="space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      {/* Full Width Header with Action Controls Below */}
+      <div className="space-y-3">
+        <div className="w-full">
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <FolderCode className="w-5 h-5 text-indigo-400" />
             Deployment & Self-Hosted Web Installer
@@ -164,14 +164,16 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'pa
         </div>
 
         {activeTab === 'package' && (
-          <button
-            onClick={handleDownload}
-            disabled={isZipping}
-            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-indigo-600/30 backdrop-blur-md transition-all disabled:opacity-50"
-          >
-            <Download className={`w-4 h-4 ${isZipping ? 'animate-bounce' : ''}`} />
-            <span>{isZipping ? 'Generating sitelift-v1.0.0.zip...' : 'Download Sitelift ZIP (v1.0.0)'}</span>
-          </button>
+          <div className="flex items-center gap-2 flex-wrap pt-1">
+            <button
+              onClick={handleDownload}
+              disabled={isZipping}
+              className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-indigo-600/30 backdrop-blur-md transition-all disabled:opacity-50"
+            >
+              <Download className={`w-4 h-4 ${isZipping ? 'animate-bounce' : ''}`} />
+              <span>{isZipping ? 'Generating sitelift-v1.0.0.zip...' : 'Download Sitelift ZIP (v1.0.0)'}</span>
+            </button>
+          </div>
         )}
       </div>
 

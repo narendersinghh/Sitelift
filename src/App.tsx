@@ -75,14 +75,14 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 flex font-sans selection:bg-indigo-500 selection:text-white relative">
+    <div className="h-screen w-screen bg-[#0f172a] text-slate-200 flex font-sans selection:bg-indigo-500 selection:text-white relative overflow-hidden">
       
       {/* Frosted Glass Ambient Luminous Glowing Orbs */}
       <div className="fixed top-[-10%] left-[-10%] w-[45%] h-[45%] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none z-0"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/15 rounded-full blur-[150px] pointer-events-none z-0"></div>
       <div className="fixed top-[30%] right-[15%] w-[35%] h-[35%] bg-purple-600/10 rounded-full blur-[130px] pointer-events-none z-0"></div>
 
-      {/* Left Side Navigation Panel (Sticky) */}
+      {/* Left Side Navigation Panel (Sticky / Locked) */}
       <Sidebar
         activeTab={activeTab}
         onSelectTab={setActiveTab}
@@ -95,8 +95,8 @@ export function App() {
         onToggleCollapse={handleToggleCollapse}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 z-10">
+      {/* Main Content Area - Scrollable Independently */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden z-10 custom-scrollbar">
         
         {/* Top Header Bar */}
         <TopHeader
@@ -239,23 +239,6 @@ export function App() {
             }}
           />
         )}
-
-        {/* Footer */}
-        <footer className="border-t border-white/10 bg-white/5 backdrop-blur-md py-5 text-center text-xs text-slate-400">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div>
-              <strong className="text-slate-200">Sitelift</strong> • Self-Hosted Personal SEO Intelligence & Activity Planning Suite
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setActiveTab('deployment')}
-                className="text-indigo-400 hover:text-indigo-300 hover:underline"
-              >
-                Deployment & Installer
-              </button>
-            </div>
-          </div>
-        </footer>
 
       </div>
 
