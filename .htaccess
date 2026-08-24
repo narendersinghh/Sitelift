@@ -3,7 +3,6 @@ DirectoryIndex index.php index.html
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
 
     # Disable directory browsing
     Options -Indexes
@@ -12,24 +11,20 @@ DirectoryIndex index.php index.html
     RewriteRule ^(\.env|\.git|\.env\.example|database\.sql) - [F,L,NC]
     RewriteRule ^(writable|app)/ - [F,L,NC]
 
-    # If someone directly visits index.html, force it to index.php
-    RewriteRule ^index\.html$ index.php [L,NC]
-
-    # Route assets to dist/assets/
-    RewriteRule ^assets/(.*)$ dist/assets/$1 [L,NC]
-    RewriteRule ^dist/assets/(.*)$ dist/assets/$1 [L,NC]
-
     # Route installer directly if requested
     RewriteRule ^install/?$ public/install/index.php [L]
     RewriteRule ^install/index\.php$ public/install/index.php [L]
 
-    # Allow direct access to existing files (except raw index.html)
+    # Block direct dev index.html requests
+    RewriteRule ^index\.html$ index.php [L,NC]
+
+    # Allow direct access to existing static files (JS, CSS, SVGs, Fonts)
     RewriteCond %{REQUEST_URI} !^/index\.html$ [NC]
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # Route all other traffic to index.php
+    # Route all other traffic to index.php router
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
 
@@ -39,3 +34,4 @@ DirectoryIndex index.php index.html
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
 </IfModule>
+

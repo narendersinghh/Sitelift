@@ -3,7 +3,7 @@
  * Sitelift - Self-Hosted Personal SEO Intelligence
  * Main Application & Auto-Installer Router
  * 
- * Requirements: PHP 8.2+, MySQL 5.7+ / 8.0+, Apache / Nginx
+ * Requirements: PHP 8.2+, MySQL 5.7+ / 8.0+, Apache / Nginx / LiteSpeed
  */
 
 define('SITELIFT_ROOT', __DIR__);
@@ -30,32 +30,59 @@ if (!file_exists($lockFile) || !file_exists($envFile)) {
 // -------------------------------------------------------------
 $env = @parse_ini_file($envFile);
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
-$parsedPath = parse_url($requestUri, PHP_URL_PATH);
+$parsedPath = parse_url($requestUri, PHP_URL_PATH) ?? '/';
 
 // -------------------------------------------------------------
-// 3. Static Asset Router (for servers without direct rewrite)
+// 3. Robust Static Asset Delivery (handles root, subfolders, & direct PHP routing)
 // -------------------------------------------------------------
-if (preg_match('#^/(assets|dist/assets)/(.+)$#', $parsedPath, $matches)) {
-    $assetFile = SITELIFT_ROOT . '/dist/assets/' . basename($matches[2]);
-    if (!file_exists($assetFile)) {
-        $assetFile = SITELIFT_ROOT . '/assets/' . basename($matches[2]);
+if (preg_match('#(?:^|/)(assets|dist/assets)/([^/?#]+)#i', $parsedPath, $matches)) {
+    $filename = basename($matches[2]);
+    
+    // Check multiple possible asset locations
+    $candidatePaths = [
+        SITELIFT_ROOT . '/assets/' . $filename,
+        SITELIFT_ROOT . '/dist/assets/' . $filename,
+        SITELIFT_ROOT . '/public/assets/' . $filename
+    ];
+
+    $assetFile = null;
+    foreach ($candidatePaths as $p) {
+        if (file_exists($p) && is_file($p)) {
+            $assetFile = $p;
+            break;
+        }
     }
-    if (file_exists($assetFile)) {
+
+    if ($assetFile) {
         $ext = strtolower(pathinfo($assetFile, PATHINFO_EXTENSION));
         $mimes = [
-            'js' => 'application/javascript; charset=utf-8',
-            'css' => 'text/css; charset=utf-8',
-            'svg' => 'image/svg+xml',
-            'png' => 'image/png',
-            'jpg' => 'image/jpeg',
-            'webp' => 'image/webp',
+            'js'    => 'application/javascript; charset=utf-8',
+            'mjs'   => 'application/javascript; charset=utf-8',
+            'css'   => 'text/css; charset=utf-8',
+            'svg'   => 'image/svg+xml',
+            'png'   => 'image/png',
+            'jpg'   => 'image/jpeg',
+            'jpeg'  => 'image/jpeg',
+            'webp'  => 'image/webp',
+            'gif'   => 'image/gif',
+            'ico'   => 'image/x-icon',
             'woff2' => 'font/woff2',
-            'woff' => 'font/woff',
-            'json' => 'application/json'
+            'woff'  => 'font/woff',
+            'ttf'   => 'font/ttf',
+            'json'  => 'application/json; charset=utf-8',
+            'map'   => 'application/json; charset=utf-8'
         ];
+
+        header('Access-Control-Allow-Origin: *');
         header('Content-Type: ' . ($mimes[$ext] ?? 'application/octet-stream'));
-        header('Cache-Control: public, max-age=31536000');
+        header('Content-Length: ' . filesize($assetFile));
+        header('Cache-Control: public, max-age=31536000, immutable');
         readfile($assetFile);
+        exit;
+    } else {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo "404 Not Found: Static asset [{$filename}] could not be located in assets/ or dist/assets/.";
         exit;
     }
 }
@@ -63,7 +90,7 @@ if (preg_match('#^/(assets|dist/assets)/(.+)$#', $parsedPath, $matches)) {
 // -------------------------------------------------------------
 // 4. API Router for Server-Side Endpoints
 // -------------------------------------------------------------
-if (strpos($parsedPath, '/api/') === 0) {
+if (strpos($parsedPath, '/api/') !== false) {
     header('Content-Type: application/json; charset=utf-8');
     
     // Database connection
@@ -91,7 +118,7 @@ if (strpos($parsedPath, '/api/') === 0) {
     }
 
     // Health / Version check
-    if ($parsedPath === '/api/health' || $parsedPath === '/api/version') {
+    if (strpos($parsedPath, '/api/health') !== false || strpos($parsedPath, '/api/version') !== false) {
         echo json_encode([
             'status' => 'healthy',
             'version' => SITELIFT_VERSION,
@@ -112,47 +139,50 @@ if (strpos($parsedPath, '/api/') === 0) {
 }
 
 // -------------------------------------------------------------
-// 5. Serve Single Page Application UI
+// 5. Calculate Base URL and Locate Built Asset Files
 // -------------------------------------------------------------
-header('Content-Type: text/html; charset=utf-8');
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/index.php';
+$baseDir = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+$baseHref = ($baseDir === '' || $baseDir === '/') ? '/' : $baseDir . '/';
 
-// If production build exists in dist/index.html, serve it directly
-if (file_exists(SITELIFT_ROOT . '/dist/index.html')) {
-    readfile(SITELIFT_ROOT . '/dist/index.html');
-    exit;
-}
-
-// Fallback: Dynamically scan for compiled assets in assets/ or dist/assets/
+// Find JavaScript Bundle
 $jsFiles = glob(SITELIFT_ROOT . '/assets/*.js');
 if (empty($jsFiles)) {
     $jsFiles = glob(SITELIFT_ROOT . '/dist/assets/*.js');
 }
+
+// Find CSS Bundle
 $cssFiles = glob(SITELIFT_ROOT . '/assets/*.css');
 if (empty($cssFiles)) {
     $cssFiles = glob(SITELIFT_ROOT . '/dist/assets/*.css');
 }
 
-$jsAsset = !empty($jsFiles) ? './assets/' . basename(end($jsFiles)) : '';
-$cssAsset = !empty($cssFiles) ? './assets/' . basename(end($cssFiles)) : '';
+$jsAsset = !empty($jsFiles) ? basename(end($jsFiles)) : '';
+$cssAsset = !empty($cssFiles) ? basename(end($cssFiles)) : '';
 
-if (!empty($jsAsset)) {
-    echo '<!doctype html>
+// -------------------------------------------------------------
+// 6. Serve Production Single Page Application HTML
+// -------------------------------------------------------------
+header('Content-Type: text/html; charset=utf-8');
+header('X-Frame-Options: SAMEORIGIN');
+header('X-Content-Type-Options: nosniff');
+?>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="<?= htmlspecialchars($baseHref) ?>">
     <title>Sitelift - Personal SEO Intelligence</title>
     <meta name="description" content="Self-Hosted Personal SEO Intelligence Suite" />
-    <script type="module" crossorigin src="' . htmlspecialchars($jsAsset) . '"></script>
-    ' . ($cssAsset ? '<link rel="stylesheet" crossorigin href="' . htmlspecialchars($cssAsset) . '">' : '') . '
+    <?php if (!empty($cssAsset)): ?>
+    <link rel="stylesheet" crossorigin href="assets/<?= htmlspecialchars($cssAsset) ?>">
+    <?php endif; ?>
+    <?php if (!empty($jsAsset)): ?>
+    <script type="module" crossorigin src="assets/<?= htmlspecialchars($jsAsset) ?>"></script>
+    <?php endif; ?>
   </head>
   <body class="bg-[#f0f5fa] text-slate-800 antialiased overflow-hidden m-0 p-0 h-full">
     <div id="root" class="h-full w-full bg-[#f0f5fa]"></div>
   </body>
-</html>';
-    exit;
-}
-
-// Minimal fallback if no assets found
-echo "<!DOCTYPE html><html><head><title>Sitelift v" . SITELIFT_VERSION . "</title><style>body{background:#0b1120;color:#f8fafc;font-family:sans-serif;text-align:center;padding:50px;}</style></head><body><h1>Sitelift Self-Hosted Suite v" . SITELIFT_VERSION . "</h1><p>Backend & Database are successfully connected.</p></body></html>";
-exit;
+</html>
