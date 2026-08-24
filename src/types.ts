@@ -659,3 +659,44 @@ export interface InstallerState {
   appKey: string;
   cronToken: string;
 }
+
+export interface ReleaseSnapshot {
+  id: string;
+  version: string;
+  releaseTag: string;
+  commitHash: string;
+  createdAt: string;
+  notes: string;
+  type: 'auto_backup' | 'manual_snapshot' | 'release_archive';
+  fileCount: number;
+  archiveSize: string;
+  schemaVersion: string;
+  isCurrent: boolean;
+  canRollback: boolean;
+}
+
+export interface GitHubReleaseInfo {
+  tag_name: string;
+  name: string;
+  published_at: string;
+  body: string;
+  html_url: string;
+  prerelease: boolean;
+  zipball_url: string;
+  tarball_url: string;
+  assets?: {
+    name: string;
+    browser_download_url: string;
+    size: number;
+  }[];
+}
+
+export interface AppVersionState {
+  currentVersion: string;
+  currentCommit: string;
+  lastCheckedAt: string;
+  githubRepo: string;
+  releaseChannel: 'stable' | 'beta';
+  latestAvailableRelease: GitHubReleaseInfo | null;
+  snapshots: ReleaseSnapshot[];
+}

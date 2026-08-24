@@ -14,7 +14,10 @@ import {
   SyncJob,
   InstallerState,
   SubmittedPageItem,
-  PageIndexStatus
+  PageIndexStatus,
+  AppVersionState,
+  ReleaseSnapshot,
+  GitHubReleaseInfo
 } from '../types';
 
 import {
@@ -50,7 +53,8 @@ const STORAGE_KEYS = {
   SYNC_JOBS: 'sitelift_sync_jobs',
   INSTALLER_STATE: 'sitelift_installer_state',
   ACTIVE_WEBSITE_ID: 'sitelift_active_website_id',
-  AUTH_USER: 'sitelift_auth_user'
+  AUTH_USER: 'sitelift_auth_user',
+  VERSION_STATE: 'sitelift_version_state'
 };
 
 export interface AuthUser {
@@ -705,6 +709,192 @@ class StorageService {
 
   public logout(): void {
     localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
+  }
+
+  // App Version & Safe Release Update Management
+  public getVersionState(): AppVersionState {
+    const defaultState: AppVersionState = {
+      currentVersion: 'v1.2.0',
+      currentCommit: '9df84a1',
+      lastCheckedAt: '2026-08-23T12:00:00Z',
+      githubRepo: 'nrsheoran/sitelift-seo-suite',
+      releaseChannel: 'stable',
+      latestAvailableRelease: {
+        tag_name: 'v1.3.0',
+        name: 'Sitelift v1.3.0: Core Web Vitals Deep Inspector & Real-time SERP Crawler Turbo',
+        published_at: '2026-08-22T18:45:00Z',
+        body: '### What\'s New in v1.3.0\n- **Live Googlebot Simulator**: Instant CWV field inspection with Mobile & Desktop simulation.\n- **Atomic GitHub Auto-Updater**: Zero-downtime updates with automatic snapshot backups and 1-click rollback.\n- **Bright Data SERP Scraper V2**: High-concurrency query pipeline with zero IP rate limits.\n- **Enhanced Index Status Diagnostic**: Direct indexing request ping for discovered URLs.\n- **Security & Fixes**: Upgraded PDO MySQL connection pooling and hardened session tokens.',
+        html_url: 'https://github.com/nrsheoran/sitelift-seo-suite/releases/tag/v1.3.0',
+        prerelease: false,
+        zipball_url: 'https://api.github.com/repos/nrsheoran/sitelift-seo-suite/zipball/v1.3.0',
+        tarball_url: 'https://api.github.com/repos/nrsheoran/sitelift-seo-suite/tarball/v1.3.0',
+        assets: [
+          {
+            name: 'sitelift-v1.3.0-production.zip',
+            browser_download_url: 'https://github.com/nrsheoran/sitelift-seo-suite/releases/download/v1.3.0/sitelift-v1.3.0-production.zip',
+            size: 4194304
+          }
+        ]
+      },
+      snapshots: [
+        {
+          id: 'snap-v1.2.0-current',
+          version: 'v1.2.0',
+          releaseTag: 'v1.2.0',
+          commitHash: '9df84a1',
+          createdAt: '2026-08-15T09:30:00Z',
+          notes: 'Active Production Build: Multi-period activity planner with pop-up calendar & keyword tracking engine',
+          type: 'release_archive',
+          fileCount: 42,
+          archiveSize: '3.8 MB',
+          schemaVersion: '2026_01_01_000001',
+          isCurrent: true,
+          canRollback: false
+        },
+        {
+          id: 'snap-v1.1.4-backup',
+          version: 'v1.1.4',
+          releaseTag: 'v1.1.4',
+          commitHash: '5b2c7e0',
+          createdAt: '2026-08-10T14:15:00Z',
+          notes: 'Auto Pre-Update Backup: Prior to midnight automated GSC sync engine deployment',
+          type: 'auto_backup',
+          fileCount: 38,
+          archiveSize: '3.6 MB',
+          schemaVersion: '2026_01_01_000001',
+          isCurrent: false,
+          canRollback: true
+        },
+        {
+          id: 'snap-v1.1.0-release',
+          version: 'v1.1.0',
+          releaseTag: 'v1.1.0',
+          commitHash: '2a88ef4',
+          createdAt: '2026-07-15T11:00:00Z',
+          notes: 'Initial Production Release: Self-hosted shared hosting package with cPanel cron automation',
+          type: 'manual_snapshot',
+          fileCount: 34,
+          archiveSize: '3.4 MB',
+          schemaVersion: '2026_01_01_000001',
+          isCurrent: false,
+          canRollback: true
+        }
+      ]
+    };
+
+    return this.get<AppVersionState>(STORAGE_KEYS.VERSION_STATE, defaultState);
+  }
+
+  public saveVersionState(state: AppVersionState): void {
+    this.set(STORAGE_KEYS.VERSION_STATE, state);
+  }
+
+  public createBackupSnapshot(notes: string, type: 'auto_backup' | 'manual_snapshot' = 'manual_snapshot'): ReleaseSnapshot {
+    const state = this.getVersionState();
+    const newSnapshot: ReleaseSnapshot = {
+      id: `snap-${state.currentVersion}-${Date.now().toString(36)}`,
+      version: state.currentVersion,
+      releaseTag: state.currentVersion,
+      commitHash: state.currentCommit,
+      createdAt: new Date().toISOString(),
+      notes: notes || `Manual snapshot backup of ${state.currentVersion}`,
+      type,
+      fileCount: 42,
+      archiveSize: '3.9 MB',
+      schemaVersion: '2026_01_01_000001',
+      isCurrent: false,
+      canRollback: true
+    };
+
+    state.snapshots.unshift(newSnapshot);
+    this.saveVersionState(state);
+    return newSnapshot;
+  }
+
+  public rollbackToSnapshot(snapshotId: string): boolean {
+    const state = this.getVersionState();
+    const target = state.snapshots.find(s => s.id === snapshotId);
+    if (!target) return false;
+
+    // Create an automatic safety snapshot of the current state before rolling back
+    const safetyBackup: ReleaseSnapshot = {
+      id: `snap-pre-rollback-${Date.now().toString(36)}`,
+      version: state.currentVersion,
+      releaseTag: state.currentVersion,
+      commitHash: state.currentCommit,
+      createdAt: new Date().toISOString(),
+      notes: `Auto safety snapshot before rollback to ${target.version}`,
+      type: 'auto_backup',
+      fileCount: 42,
+      archiveSize: '3.9 MB',
+      schemaVersion: target.schemaVersion,
+      isCurrent: false,
+      canRollback: true
+    };
+
+    // Update active version
+    state.currentVersion = target.version;
+    state.currentCommit = target.commitHash;
+    state.snapshots = state.snapshots.map(s => ({
+      ...s,
+      isCurrent: s.id === target.id,
+      canRollback: s.id !== target.id
+    }));
+
+    state.snapshots.unshift(safetyBackup);
+    this.saveVersionState(state);
+    return true;
+  }
+
+  public applyUpdateToRelease(release: GitHubReleaseInfo): void {
+    const state = this.getVersionState();
+    
+    // Create automatic pre-update backup snapshot of current version
+    const preUpdateBackup: ReleaseSnapshot = {
+      id: `snap-${state.currentVersion}-pre-update-${Date.now().toString(36)}`,
+      version: state.currentVersion,
+      releaseTag: state.currentVersion,
+      commitHash: state.currentCommit,
+      createdAt: new Date().toISOString(),
+      notes: `Pre-update backup before upgrading to ${release.tag_name}`,
+      type: 'auto_backup',
+      fileCount: 42,
+      archiveSize: '3.9 MB',
+      schemaVersion: '2026_01_01_000001',
+      isCurrent: false,
+      canRollback: true
+    };
+
+    const newCurrentSnapshot: ReleaseSnapshot = {
+      id: `snap-${release.tag_name}-${Date.now().toString(36)}`,
+      version: release.tag_name,
+      releaseTag: release.tag_name,
+      commitHash: 'e71b30c',
+      createdAt: new Date().toISOString(),
+      notes: release.name || `Upgraded to ${release.tag_name}`,
+      type: 'release_archive',
+      fileCount: 46,
+      archiveSize: '4.2 MB',
+      schemaVersion: '2026_01_01_000002',
+      isCurrent: true,
+      canRollback: false
+    };
+
+    state.currentVersion = release.tag_name;
+    state.currentCommit = 'e71b30c';
+    state.latestAvailableRelease = null; // update applied
+    state.lastCheckedAt = new Date().toISOString();
+
+    state.snapshots = state.snapshots.map(s => ({
+      ...s,
+      isCurrent: false,
+      canRollback: true
+    }));
+
+    state.snapshots.unshift(newCurrentSnapshot);
+    state.snapshots.splice(1, 0, preUpdateBackup);
+
+    this.saveVersionState(state);
   }
 }
 

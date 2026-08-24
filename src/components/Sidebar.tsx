@@ -56,6 +56,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const gaConn = storage.getGaConnections()[currentSiteId];
   const gscConn = storage.getGscConnections()[currentSiteId];
 
+  // Version state for deployment update alerts
+  const versionState = storage.getVersionState();
+  const hasUpdate = Boolean(versionState.latestAvailableRelease);
   // Critical declining count
   const { summary: declineSummary } = computeDecliningPages(currentSiteId, { period: '28d' });
   const criticalDecliningCount = declineSummary?.criticalCount ?? 0;
@@ -200,11 +203,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         },
         {
           id: 'deployment',
-          label: 'Deploy & Installer',
+          label: 'Deploy & Updates',
           icon: FolderCode,
           iconColor: 'text-blue-400',
           iconBg: 'bg-blue-500/10 group-hover:bg-blue-500/20',
-          badge: 'PHP 8.2+',
+          dot: hasUpdate,
+          dotColor: 'bg-emerald-400',
+          badge: !hasUpdate ? versionState.currentVersion : undefined,
           badgeColor: 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
         },
         {
@@ -240,7 +245,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="font-bold text-base tracking-tight text-white flex items-center gap-1.5">
                 <span>Sitelift</span>
                 <span className="text-[11px] px-1.5 py-0.2 rounded-full font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  v1.0
+                  {versionState.currentVersion}
                 </span>
               </div>
               <div className="text-xs text-slate-400 truncate">Your personal SEO Suite</div>
