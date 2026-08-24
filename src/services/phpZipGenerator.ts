@@ -9,6 +9,312 @@ export interface CodeFile {
 
 export const phpCodebaseFiles: CodeFile[] = [
   {
+    path: 'index.php',
+    category: 'config',
+    description: 'Root router that auto-redirects to web installer if uninstalled, or serves dashboard.',
+    content: `<?php
+/**
+ * Sitelift - Entry Router & Auto-Installer Redirect
+ */
+$lockFile = __DIR__ . '/writable/install.lock';
+
+if (!file_exists($lockFile)) {
+    // If not installed yet, redirect automatically to installer
+    if (file_exists(__DIR__ . '/install/index.php')) {
+        header('Location: install/index.php');
+        exit;
+    } elseif (file_exists(__DIR__ . '/public/install/index.php')) {
+        header('Location: public/install/index.php');
+        exit;
+    }
+}
+
+// If installed, serve the main dashboard or public app
+if (file_exists(__DIR__ . '/public/index.php')) {
+    require_once __DIR__ . '/public/index.php';
+} else {
+    echo "<h1>Sitelift Active</h1><p>Application is installed. Please access via your web entry point.</p>";
+}
+`
+  },
+  {
+    path: '.htaccess',
+    category: 'config',
+    description: 'Root Apache configuration with mod_rewrite routing and security headers.',
+    content: `<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Allow direct access to installer
+    RewriteRule ^install/?$ install/index.php [L,QSA]
+    RewriteRule ^install/(.*)$ install/$1 [L,QSA]
+
+    # Protect sensitive config and storage folders
+    RewriteRule ^(app|writable|\.env|composer\.(json|lock)) - [F,L,NC]
+
+    # Route remaining requests
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</IfModule>
+`
+  },
+  {
+    path: 'install/index.php',
+    category: 'installer',
+    description: 'Direct root installer entry point for shared hosting environments.',
+    content: `<?php
+/**
+ * Sitelift - Direct Root Installation Entry Point
+ */
+define('SITELIFT_ROOT', dirname(__DIR__));
+$lockFile = SITELIFT_ROOT . '/writable/install.lock';
+
+if (file_exists($lockFile)) {
+    die("<h1>Installation Locked</h1><p>Sitelift has already been installed. For security reasons, the installer is disabled. Remove <code>writable/install.lock</code> if you need to reinstall.</p>");
+}
+
+$step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
+$errors = [];
+$success = null;
+
+// Step 1: System Requirements Check
+$requirements = [
+    'PHP Version (>= 8.2)' => version_compare(PHP_VERSION, '8.2.0', '>='),
+    'PDO MySQL Extension'  => extension_loaded('pdo_mysql'),
+    'cURL Extension'       => extension_loaded('curl'),
+    'OpenSSL Extension'    => extension_loaded('openssl'),
+    'mbstring Extension'   => extension_loaded('mbstring'),
+    'JSON Extension'       => extension_loaded('json'),
+    'Writable Folders'     => is_writable(SITELIFT_ROOT . '/writable') || @mkdir(SITELIFT_ROOT . '/writable', 0755, true)
+];
+
+$allRequirementsPassed = !in_array(false, $requirements, true);
+
+// Step 2 & 3: Database & Admin Setup Processing
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] === 'install') {
+        $dbHost = trim($_POST['db_host'] ?? '127.0.0.1');
+        $dbPort = trim($_POST['db_port'] ?? '3306');
+        $dbName = trim($_POST['db_name'] ?? 'sitelift');
+        $dbUser = trim($_POST['db_user'] ?? 'root');
+        $dbPass = $_POST['db_pass'] ?? '';
+        $dbPrefix = trim($_POST['db_prefix'] ?? 'sl_');
+
+        $adminEmail = trim($_POST['admin_email'] ?? '');
+        $adminName = trim($_POST['admin_name'] ?? 'Administrator');
+        $adminPass = $_POST['admin_password'] ?? '';
+
+        if (empty($adminEmail) || empty($adminPass)) {
+            $errors[] = "Admin email and password are required.";
+        }
+
+        if (empty($errors)) {
+            try {
+                // Attempt connection to MySQL server
+                $dsnWithoutDb = "mysql:host={$dbHost};port={$dbPort};charset=utf8mb4";
+                $pdo = new PDO($dsnWithoutDb, $dbUser, $dbPass, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ]);
+
+                // Create database if permitted
+                $pdo->exec("CREATE DATABASE IF NOT EXISTS \`{$dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+                $pdo->exec("USE \`{$dbName}\`;");
+
+                // Execute SQL Schema Migration
+                $migrationPath = SITELIFT_ROOT . '/app/Database/Migrations/2026_01_01_000001_create_sitelift_tables.sql';
+                if (file_exists($migrationPath)) {
+                    $schemaSql = file_get_contents($migrationPath);
+                    $schemaSql = str_replace('sl_', $dbPrefix, $schemaSql);
+                    $pdo->exec($schemaSql);
+                }
+
+                // Create Admin User
+                $passHash = password_hash($adminPass, PASSWORD_BCRYPT, ['cost' => 12]);
+                $stmt = $pdo->prepare("INSERT INTO {$dbPrefix}users (name, email, password_hash, role, created_at) VALUES (?, ?, ?, 'admin', NOW())");
+                $stmt->execute([$adminName, $adminEmail, $passHash]);
+
+                // Generate App Key and Cron Token
+                $appKey = 'base64:' . base64_encode(random_bytes(32));
+                $cronToken = 'sl_cron_' . bin2hex(random_bytes(16));
+
+                // Insert Default Settings
+                $stmt = $pdo->prepare("INSERT INTO {$dbPrefix}settings (setting_key, setting_value, created_at) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE setting_value = ?");
+                $settings = [
+                    'app_name' => 'Sitelift',
+                    'app_key' => $appKey,
+                    'cron_token' => $cronToken,
+                    'timezone' => 'America/New_York',
+                    'retention_days_daily' => '365',
+                    'retention_days_queries' => '180',
+                    'retention_days_rank' => '730',
+                    'retention_days_logs' => '60'
+                ];
+                foreach ($settings as $k => $v) {
+                    $stmt->execute([$k, $v, $v]);
+                }
+
+                // Write .env config file
+                $envContent = "# Sitelift Configuration Generated " . date('Y-m-d H:i:s') . "\\n" .
+                    "CI_ENVIRONMENT = production\\n\\n" .
+                    "app.baseURL = '" . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/'\\n" .
+                    "app.appKey = '{$appKey}'\\n\\n" .
+                    "database.default.hostname = '{$dbHost}'\\n" .
+                    "database.default.database = '{$dbName}'\\n" .
+                    "database.default.username = '{$dbUser}'\\n" .
+                    "database.default.password = '{$dbPass}'\\n" .
+                    "database.default.DBDriver = 'MySQLi'\\n" .
+                    "database.default.DBPrefix = '{$dbPrefix}'\\n" .
+                    "database.default.port = {$dbPort}\\n\\n" .
+                    "sitelift.cronToken = '{$cronToken}'\\n";
+
+                file_put_contents(SITELIFT_ROOT . '/.env', $envContent);
+
+                // Create Lock File
+                file_put_contents($lockFile, json_encode([
+                    'installed_at' => date('c'),
+                    'version' => '1.2.0',
+                    'admin_email' => $adminEmail
+                ], JSON_PRETTY_PRINT));
+
+                $step = 4;
+                $success = true;
+            } catch (Exception $e) {
+                $errors[] = "Installation Failed: " . $e->getMessage();
+            }
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitelift Installer - Step <?= $step ?> of 4</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        .badge-ok { background-color: #059669; }
+        .badge-fail { background-color: #dc2626; }
+        .btn-primary { background-color: #2563eb; border-color: #2563eb; font-weight: 600; }
+        .btn-primary:hover { background-color: #1d4ed8; border-color: #1d4ed8; }
+        .form-control, .form-select { background-color: #0f172a; border-color: #334155; color: #f8fafc; }
+        .form-control:focus { background-color: #0f172a; border-color: #2563eb; color: #f8fafc; box-shadow: 0 0 0 0.25rem rgba(37,99,235,0.25); }
+    </style>
+</head>
+<body class="py-5">
+<div class="container" style="max-width: 680px;">
+    <div class="text-center mb-4">
+        <h1 class="h3 fw-bold text-white mb-1">Sitelift Web Installer</h1>
+        <p class="text-secondary small">Self-Hosted Personal SEO Monitoring & Activity Planner</p>
+    </div>
+
+    <?php if (!empty($errors)): ?>
+        <div class="alert alert-danger mb-4">
+            <ul class="mb-0">
+                <?php foreach ($errors as $err): ?>
+                    <li><?= htmlspecialchars($err) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($step === 1): ?>
+        <div class="card p-4">
+            <h5 class="fw-bold mb-3">Step 1: Server Environment Check</h5>
+            <div class="list-group mb-4">
+                <?php foreach ($requirements as $name => $passed): ?>
+                    <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-light border-secondary">
+                        <?= htmlspecialchars($name) ?>
+                        <span class="badge <?= $passed ? 'badge-ok' : 'badge-fail' ?> rounded-pill px-3 py-2">
+                            <?= $passed ? 'Supported' : 'Missing' ?>
+                        </span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($allRequirementsPassed): ?>
+                <a href="?step=2" class="btn btn-primary w-100 py-2">Proceed to Database Configuration &rarr;</a>
+            <?php else: ?>
+                <div class="alert alert-warning mb-0">Please resolve the missing PHP extensions or folder permissions on your server before proceeding.</div>
+            <?php endif; ?>
+        </div>
+
+    <?php elseif ($step === 2 || $step === 3): ?>
+        <div class="card p-4">
+            <h5 class="fw-bold mb-3">Step 2: MySQL & Admin Account Setup</h5>
+            <form method="POST">
+                <input type="hidden" name="action" value="install">
+                
+                <h6 class="text-uppercase small fw-bold mt-2 mb-3 text-primary">Database Credentials</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-8">
+                        <label class="form-label small">MySQL Host</label>
+                        <input type="text" name="db_host" class="form-control" value="127.0.0.1" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">Port</label>
+                        <input type="text" name="db_port" class="form-control" value="3306" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Database Name</label>
+                        <input type="text" name="db_name" class="form-control" value="sitelift" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Table Prefix</label>
+                        <input type="text" name="db_prefix" class="form-control" value="sl_" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Username</label>
+                        <input type="text" name="db_user" class="form-control" placeholder="db_user" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Password</label>
+                        <input type="password" name="db_pass" class="form-control" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <h6 class="text-uppercase small fw-bold mb-3 text-primary">Primary Admin User</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label small">Admin Name</label>
+                        <input type="text" name="admin_name" class="form-control" value="Administrator" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Admin Email</label>
+                        <input type="email" name="admin_email" class="form-control" placeholder="admin@example.com" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small">Admin Password</label>
+                        <input type="password" name="admin_password" class="form-control" placeholder="Strong password (min 8 chars)" minlength="8" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">Run Migrations & Complete Installation &rarr;</button>
+            </form>
+        </div>
+
+    <?php elseif ($step === 4): ?>
+        <div class="card p-4 text-center">
+            <div class="text-success mb-3" style="font-size: 3rem;">✓</div>
+            <h4 class="fw-bold mb-2">Installation Complete!</h4>
+            <p class="text-secondary small mb-4">Database tables have been created, configuration written, and the installer is now safely locked.</p>
+            
+            <div class="alert alert-dark text-start font-monospace small mb-4 p-3 bg-black border-secondary">
+                <strong>Cron Command for Shared Hosting:</strong><br>
+                <code>* * * * * php <?= SITELIFT_ROOT ?>/cron.php --token=<?= $cronToken ?> >/dev/null 2>&1</code>
+            </div>
+
+            <a href="/" class="btn btn-primary py-2 px-5">Go to Sitelift Login &rarr;</a>
+        </div>
+    <?php endif; ?>
+</div>
+</body>
+</html>`
+  },
+  {
     path: 'public/install/index.php',
     category: 'installer',
     description: 'Web installer wizard with system checks, MySQL auto-creation, schema migration, admin provisioning, and lockfile.',
