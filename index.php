@@ -115,13 +115,44 @@ if (strpos($parsedPath, '/api/') === 0) {
 // 5. Serve Single Page Application UI
 // -------------------------------------------------------------
 header('Content-Type: text/html; charset=utf-8');
+
+// If production build exists in dist/index.html, serve it directly
 if (file_exists(SITELIFT_ROOT . '/dist/index.html')) {
     readfile(SITELIFT_ROOT . '/dist/index.html');
     exit;
-} elseif (file_exists(SITELIFT_ROOT . '/index.html')) {
-    readfile(SITELIFT_ROOT . '/index.html');
-    exit;
-} else {
-    echo "<!DOCTYPE html><html><head><title>Sitelift v" . SITELIFT_VERSION . "</title><style>body{background:#0b1120;color:#f8fafc;font-family:sans-serif;text-align:center;padding:50px;}</style></head><body><h1>Sitelift Self-Hosted Suite v" . SITELIFT_VERSION . "</h1><p>Backend & Database are successfully connected.</p></body></html>";
+}
+
+// Fallback: Dynamically scan for compiled assets in assets/ or dist/assets/
+$jsFiles = glob(SITELIFT_ROOT . '/assets/*.js');
+if (empty($jsFiles)) {
+    $jsFiles = glob(SITELIFT_ROOT . '/dist/assets/*.js');
+}
+$cssFiles = glob(SITELIFT_ROOT . '/assets/*.css');
+if (empty($cssFiles)) {
+    $cssFiles = glob(SITELIFT_ROOT . '/dist/assets/*.css');
+}
+
+$jsAsset = !empty($jsFiles) ? './assets/' . basename(end($jsFiles)) : '';
+$cssAsset = !empty($cssFiles) ? './assets/' . basename(end($cssFiles)) : '';
+
+if (!empty($jsAsset)) {
+    echo '<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sitelift - Personal SEO Intelligence</title>
+    <meta name="description" content="Self-Hosted Personal SEO Intelligence Suite" />
+    <script type="module" crossorigin src="' . htmlspecialchars($jsAsset) . '"></script>
+    ' . ($cssAsset ? '<link rel="stylesheet" crossorigin href="' . htmlspecialchars($cssAsset) . '">' : '') . '
+  </head>
+  <body class="bg-[#f0f5fa] text-slate-800 antialiased overflow-hidden m-0 p-0 h-full">
+    <div id="root" class="h-full w-full bg-[#f0f5fa]"></div>
+  </body>
+</html>';
     exit;
 }
+
+// Minimal fallback if no assets found
+echo "<!DOCTYPE html><html><head><title>Sitelift v" . SITELIFT_VERSION . "</title><style>body{background:#0b1120;color:#f8fafc;font-family:sans-serif;text-align:center;padding:50px;}</style></head><body><h1>Sitelift Self-Hosted Suite v" . SITELIFT_VERSION . "</h1><p>Backend & Database are successfully connected.</p></body></html>";
+exit;

@@ -1,4 +1,6 @@
 # Sitelift Apache Web Server Configuration
+DirectoryIndex index.php index.html
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -10,18 +12,22 @@
     RewriteRule ^(\.env|\.git|\.env\.example|database\.sql) - [F,L,NC]
     RewriteRule ^(writable|app)/ - [F,L,NC]
 
+    # If someone directly visits index.html, force it to index.php
+    RewriteRule ^index\.html$ index.php [L,NC]
+
     # Route assets to dist/assets/
     RewriteRule ^assets/(.*)$ dist/assets/$1 [L,NC]
     RewriteRule ^dist/assets/(.*)$ dist/assets/$1 [L,NC]
 
-    # Allow direct access to existing files or directories
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
-
     # Route installer directly if requested
     RewriteRule ^install/?$ public/install/index.php [L]
     RewriteRule ^install/index\.php$ public/install/index.php [L]
+
+    # Allow direct access to existing files (except raw index.html)
+    RewriteCond %{REQUEST_URI} !^/index\.html$ [NC]
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
     # Route all other traffic to index.php
     RewriteRule ^ index.php [QSA,L]
