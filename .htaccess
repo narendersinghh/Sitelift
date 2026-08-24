@@ -10,6 +10,10 @@
     RewriteRule ^(\.env|\.git|\.env\.example|database\.sql) - [F,L,NC]
     RewriteRule ^(writable|app)/ - [F,L,NC]
 
+    # Route assets to dist/assets/
+    RewriteRule ^assets/(.*)$ dist/assets/$1 [L,NC]
+    RewriteRule ^dist/assets/(.*)$ dist/assets/$1 [L,NC]
+
     # Allow direct access to existing files or directories
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

@@ -33,7 +33,35 @@ $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 $parsedPath = parse_url($requestUri, PHP_URL_PATH);
 
 // -------------------------------------------------------------
-// 3. API Router for Server-Side Endpoints
+// 3. Static Asset Router (for servers without direct rewrite)
+// -------------------------------------------------------------
+if (preg_match('#^/(assets|dist/assets)/(.+)$#', $parsedPath, $matches)) {
+    $assetFile = SITELIFT_ROOT . '/dist/assets/' . basename($matches[2]);
+    if (!file_exists($assetFile)) {
+        $assetFile = SITELIFT_ROOT . '/assets/' . basename($matches[2]);
+    }
+    if (file_exists($assetFile)) {
+        $ext = strtolower(pathinfo($assetFile, PATHINFO_EXTENSION));
+        $mimes = [
+            'js' => 'application/javascript; charset=utf-8',
+            'css' => 'text/css; charset=utf-8',
+            'svg' => 'image/svg+xml',
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'webp' => 'image/webp',
+            'woff2' => 'font/woff2',
+            'woff' => 'font/woff',
+            'json' => 'application/json'
+        ];
+        header('Content-Type: ' . ($mimes[$ext] ?? 'application/octet-stream'));
+        header('Cache-Control: public, max-age=31536000');
+        readfile($assetFile);
+        exit;
+    }
+}
+
+// -------------------------------------------------------------
+// 4. API Router for Server-Side Endpoints
 // -------------------------------------------------------------
 if (strpos($parsedPath, '/api/') === 0) {
     header('Content-Type: application/json; charset=utf-8');
@@ -84,16 +112,16 @@ if (strpos($parsedPath, '/api/') === 0) {
 }
 
 // -------------------------------------------------------------
-// 4. Serve Single Page Application UI (Built or Embedded)
+// 5. Serve Single Page Application UI
 // -------------------------------------------------------------
+header('Content-Type: text/html; charset=utf-8');
 if (file_exists(SITELIFT_ROOT . '/dist/index.html')) {
-    include SITELIFT_ROOT . '/dist/index.html';
+    readfile(SITELIFT_ROOT . '/dist/index.html');
     exit;
 } elseif (file_exists(SITELIFT_ROOT . '/index.html')) {
-    include SITELIFT_ROOT . '/index.html';
+    readfile(SITELIFT_ROOT . '/index.html');
     exit;
 } else {
-    header("Content-Type: text/html; charset=utf-8");
     echo "<!DOCTYPE html><html><head><title>Sitelift v" . SITELIFT_VERSION . "</title><style>body{background:#0b1120;color:#f8fafc;font-family:sans-serif;text-align:center;padding:50px;}</style></head><body><h1>Sitelift Self-Hosted Suite v" . SITELIFT_VERSION . "</h1><p>Backend & Database are successfully connected.</p></body></html>";
     exit;
 }
