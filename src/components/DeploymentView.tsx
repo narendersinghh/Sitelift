@@ -114,9 +114,8 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
       badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
       description: 'Step-by-step browser wizard for PDO database verification & initial admin provisioning',
       files: [
-        { path: 'install.php', label: 'Standalone Root Installer (PHP 8.2+)', size: '13.8 KB', type: 'PHP' },
-        { path: 'install/index.php', label: 'Modular Folder Installer (PHP)', size: '14.1 KB', type: 'PHP' },
-        { path: 'public/install/index.php', label: 'Web Root Installer (PHP)', size: '14.1 KB', type: 'PHP' }
+        { path: 'public/install/index.php', label: 'Web Installer Wizard (PHP)', size: '14.1 KB', type: 'PHP' },
+        { path: 'public/install/installer.css', label: 'Installer Bootstrap Theme', size: '6.8 KB', type: 'CSS' }
       ]
     },
     {

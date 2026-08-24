@@ -1,0 +1,31 @@
+# Sitelift Apache Web Server Configuration
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Disable directory browsing
+    Options -Indexes
+
+    # Deny direct browser access to sensitive files and directories
+    RewriteRule ^(\.env|\.git|\.env\.example|database\.sql) - [F,L,NC]
+    RewriteRule ^(writable|app)/ - [F,L,NC]
+
+    # Allow direct access to existing files or directories
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Route installer directly if requested
+    RewriteRule ^install/?$ public/install/index.php [L]
+    RewriteRule ^install/index\.php$ public/install/index.php [L]
+
+    # Route all other traffic to index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Security Headers & MIME types
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

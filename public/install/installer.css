@@ -1,0 +1,59 @@
+/* Sitelift Web Installer Stylesheet */
+:root {
+  --sl-bg: #0b1120;
+  --sl-card: #1e293b;
+  --sl-border: #334155;
+  --sl-primary: #0284c7;
+  --sl-primary-hover: #0369a1;
+  --sl-text: #f8fafc;
+  --sl-muted: #94a3b8;
+  --sl-success: #059669;
+  --sl-danger: #dc2626;
+}
+
+body {
+  background-color: var(--sl-bg);
+  color: var(--sl-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  margin: 0;
+  padding: 40px 16px;
+}
+
+.installer-container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: var(--sl-card);
+  border: 1px solid var(--sl-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  padding: 24px;
+}
+
+.form-control, .form-select {
+  background-color: #0f172a !important;
+  border: 1px solid var(--sl-border) !important;
+  color: var(--sl-text) !important;
+  border-radius: 8px !important;
+}
+
+.form-control:focus {
+  border-color: var(--sl-primary) !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
+}
+
+.btn-primary {
+  background-color: var(--sl-primary);
+  border-color: var(--sl-primary);
+  border-radius: 8px;
+  font-weight: 600;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--sl-primary-hover);
+  border-color: var(--sl-primary-hover);
+}
