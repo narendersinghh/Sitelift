@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { generateSiteliftZip, downloadSiteliftZip } from '../services/phpZipGenerator';
 import { storage } from '../services/storage';
+import { githubReleaseService } from '../services/githubReleaseService';
 import { AppVersionState, ReleaseSnapshot, GitHubReleaseInfo } from '../types';
 
 interface DeploymentViewProps {
@@ -181,47 +182,32 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
   };
 
   // Check GitHub for Updates
-  const handleCheckForUpdates = () => {
+  const handleCheckForUpdates = async () => {
     setIsCheckingUpdates(true);
     setUpdateCheckMessage(null);
 
-    setTimeout(() => {
-      setIsCheckingUpdates(false);
+    try {
+      const result = await githubReleaseService.checkForUpdates(
+        versionState.githubRepo,
+        versionState.currentVersion,
+        versionState.releaseChannel
+      );
+
       const state = storage.getVersionState();
-      
-      // If no release was set, simulate a new release available or confirm latest
-      if (!state.latestAvailableRelease && state.currentVersion === 'v1.2.0') {
-        const mockNewRelease: GitHubReleaseInfo = {
-          tag_name: 'v1.3.0',
-          name: 'Sitelift v1.3.0: Core Web Vitals Deep Inspector & Real-time SERP Crawler Turbo',
-          published_at: '2026-08-22T18:45:00Z',
-          body: '### What\'s New in v1.3.0\n- **Live Googlebot Simulator**: Instant CWV field inspection with Mobile & Desktop simulation.\n- **Atomic GitHub Auto-Updater**: Zero-downtime updates with automatic snapshot backups and 1-click rollback.\n- **Bright Data SERP Scraper V2**: High-concurrency query pipeline with zero IP rate limits.\n- **Enhanced Index Status Diagnostic**: Direct indexing request ping for discovered URLs.\n- **Security & Fixes**: Upgraded PDO MySQL connection pooling and hardened session tokens.',
-          html_url: `https://github.com/${state.githubRepo}/releases/tag/v1.3.0`,
-          prerelease: false,
-          zipball_url: `https://api.github.com/repos/${state.githubRepo}/zipball/v1.3.0`,
-          tarball_url: `https://api.github.com/repos/${state.githubRepo}/tarball/v1.3.0`,
-          assets: [
-            {
-              name: 'sitelift-v1.3.0-production.zip',
-              browser_download_url: `https://github.com/${state.githubRepo}/releases/download/v1.3.0/sitelift-v1.3.0-production.zip`,
-              size: 4194304
-            }
-          ]
-        };
-        state.latestAvailableRelease = mockNewRelease;
-        state.lastCheckedAt = new Date().toISOString();
-        storage.saveVersionState(state);
-        setVersionState(state);
-        setUpdateCheckMessage('A new release is available on GitHub: v1.3.0');
-      } else if (state.latestAvailableRelease) {
-        setUpdateCheckMessage(`New release ${state.latestAvailableRelease.tag_name} is ready to install!`);
-      } else {
-        state.lastCheckedAt = new Date().toISOString();
-        storage.saveVersionState(state);
-        setVersionState(state);
-        setUpdateCheckMessage(`You are running the latest version (${state.currentVersion}).`);
-      }
-    }, 800);
+      state.latestAvailableRelease = result.latestRelease;
+      state.lastCheckedAt = new Date().toISOString();
+      storage.saveVersionState(state);
+      setVersionState(state);
+      setUpdateCheckMessage(result.message);
+    } catch (err: any) {
+      const state = storage.getVersionState();
+      state.lastCheckedAt = new Date().toISOString();
+      storage.saveVersionState(state);
+      setVersionState(state);
+      setUpdateCheckMessage(`Could not check updates (${err?.message || 'Network error'}).`);
+    } finally {
+      setIsCheckingUpdates(false);
+    }
   };
 
   // Safe Update Process Handler
@@ -599,6 +585,89 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
               </button>
             </div>
           )}
+
+          {/* GitHub Repository & Channel Configuration Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-slate-900 rounded-xl text-white shadow-xs">
+                  <GitBranch className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    GitHub Release Source & Channel
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Sitelift queries official tagged releases from your GitHub repository.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={`https://github.com/${versionState.githubRepo}/releases`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 flex items-center gap-1.5 transition self-start sm:self-auto"
+              >
+                <span>View Releases on GitHub</span>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">
+                  GitHub Repository (Owner/Repo)
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={versionState.githubRepo}
+                    onChange={e => {
+                      const updated = { ...versionState, githubRepo: e.target.value };
+                      setVersionState(updated);
+                      storage.saveVersionState(updated);
+                    }}
+                    placeholder="narendersinghh/Sitelift"
+                    className="flex-1 px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-xs focus:bg-white focus:border-blue-500 focus:outline-none"
+                  />
+                  <button
+                    onClick={handleCheckForUpdates}
+                    disabled={isCheckingUpdates}
+                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 shadow-xs transition"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isCheckingUpdates ? 'animate-spin' : ''}`} />
+                    <span>Check</span>
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Official repository: <code className="font-semibold text-slate-800">narendersinghh/Sitelift</code>
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">
+                  Release Channel
+                </label>
+                <select
+                  value={versionState.releaseChannel}
+                  onChange={e => {
+                    const ch = e.target.value as 'stable' | 'beta';
+                    const updated = { ...versionState, releaseChannel: ch };
+                    setVersionState(updated);
+                    storage.saveVersionState(updated);
+                  }}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-xs focus:bg-white focus:border-blue-500 focus:outline-none"
+                >
+                  <option value="stable">Stable Channel (Only officially published releases, excludes drafts & pre-releases)</option>
+                  <option value="beta">Beta / Early Access Channel (Includes pre-releases)</option>
+                </select>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Stable channel ensures only thoroughly tested, production-ready versions are offered.
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Version History & Revert / Rollback Table */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden space-y-0">

@@ -691,6 +691,18 @@ export interface GitHubReleaseInfo {
   }[];
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'viewer' | 'manager';
+  loggedInAt?: string;
+  expiresAt?: string | null;
+  keepLoggedIn?: boolean;
+  csrfToken?: string;
+  createdAt?: string;
+}
+
 export interface AppVersionState {
   currentVersion: string;
   currentCommit: string;
@@ -700,3 +712,4 @@ export interface AppVersionState {
   latestAvailableRelease: GitHubReleaseInfo | null;
   snapshots: ReleaseSnapshot[];
 }
+

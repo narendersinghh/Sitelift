@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopHeader } from './components/TopHeader';
 import { DashboardView } from './components/DashboardView';
@@ -19,13 +19,26 @@ import { LoginView } from './components/LoginView';
 import { PageDetailModal } from './components/PageDetailModal';
 import { Website, DecliningPageItem, NavTab } from './types';
 import { storage } from './services/storage';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { getCurrentRoute, navigateToRoute } from './utils/router';
+import { CheckCircle2, AlertCircle, Globe } from 'lucide-react';
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!storage.getAuthUser());
-  const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
+  
+  // Initialize tab and website from URL route
+  const initialRoute = getCurrentRoute();
+  const [activeTab, setActiveTabState] = useState<NavTab>(initialRoute.tab);
   const [websites, setWebsites] = useState<Website[]>(() => storage.getWebsites());
-  const [activeSiteId, setActiveSiteId] = useState<string>(() => storage.getActiveWebsiteId());
+  const [activeSiteId, setActiveSiteId] = useState<string>(() => {
+    if (initialRoute.siteId) {
+      const sites = storage.getWebsites();
+      if (sites.some(s => s.id === initialRoute.siteId)) {
+        return initialRoute.siteId;
+      }
+    }
+    return storage.getActiveWebsiteId();
+  });
+  
   const [selectedDecliningItem, setSelectedDecliningItem] = useState<DecliningPageItem | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   
@@ -45,18 +58,54 @@ export function App() {
 
   const activeWebsite = websites.find(w => w.id === activeSiteId) || websites[0];
 
+  // URL Sync Handler
+  const handleNavigateToTab = useCallback((tab: NavTab) => {
+    setActiveTabState(tab);
+    navigateToRoute(tab, activeSiteId);
+  }, [activeSiteId]);
+
+  // Synchronize browser history and hash navigation
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const route = getCurrentRoute();
+      setActiveTabState(route.tab);
+      if (route.siteId && route.siteId !== activeSiteId) {
+        const sites = storage.getWebsites();
+        if (sites.some(s => s.id === route.siteId)) {
+          setActiveSiteId(route.siteId);
+          storage.setActiveWebsiteId(route.siteId);
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('popstate', handleUrlChange);
+
+    // If no hash in URL yet, set initial hash route
+    if (!window.location.hash) {
+      navigateToRoute(activeTab, activeSiteId, true);
+    }
+
+    return () => {
+      window.removeEventListener('hashchange', handleUrlChange);
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, [activeSiteId, activeTab]);
+
   const refreshAllData = () => {
     const list = storage.getWebsites();
     setWebsites(list);
     if (!list.some(w => w.id === activeSiteId) && list.length > 0) {
       setActiveSiteId(list[0].id);
       storage.setActiveWebsiteId(list[0].id);
+      navigateToRoute(activeTab, list[0].id, true);
     }
   };
 
   const handleSelectWebsite = (id: string) => {
     setActiveSiteId(id);
     storage.setActiveWebsiteId(id);
+    navigateToRoute(activeTab, id);
     refreshAllData();
   };
 
@@ -70,8 +119,18 @@ export function App() {
     setIsAuthenticated(false);
   };
 
+  // If user is not authenticated or session expired, require login
   if (!isAuthenticated) {
-    return <LoginView onLoginSuccess={() => setIsAuthenticated(true)} />;
+    return (
+      <LoginView
+        onLoginSuccess={() => {
+          setIsAuthenticated(true);
+          const current = getCurrentRoute();
+          setActiveTabState(current.tab);
+          navigateToRoute(current.tab, activeSiteId, true);
+        }}
+      />
+    );
   }
 
   return (
@@ -80,7 +139,7 @@ export function App() {
       {/* Left Side Navigation Panel (Dark sticky sidebar) */}
       <Sidebar
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={handleNavigateToTab}
         websites={websites}
         activeWebsite={activeWebsite}
         onLogout={handleLogout}
@@ -100,7 +159,7 @@ export function App() {
           websites={websites}
           activeWebsite={activeWebsite}
           onSelectWebsite={handleSelectWebsite}
-          onNavigateToTab={setActiveTab}
+          onNavigateToTab={handleNavigateToTab}
         />
 
         {/* Floating Notification Toast */}
@@ -137,7 +196,7 @@ export function App() {
               </div>
               <div>
                 <button
-                  onClick={() => setActiveTab('websites')}
+                  onClick={() => handleNavigateToTab('websites')}
                   className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all"
                 >
                   Add Website Project Now
@@ -151,12 +210,12 @@ export function App() {
               website={activeWebsite}
               websites={websites}
               onSelectWebsite={handleSelectWebsite}
-              onNavigateToDeclining={() => setActiveTab('declining_pages')}
-              onNavigateToKeywords={() => setActiveTab('keywords')}
-              onNavigateToActivities={() => setActiveTab('activities')}
-              onNavigateToReports={() => setActiveTab('reports')}
-              onNavigateToInsights={() => setActiveTab('insights')}
-              onNavigateToWebsites={() => setActiveTab('websites')}
+              onNavigateToDeclining={() => handleNavigateToTab('declining_pages')}
+              onNavigateToKeywords={() => handleNavigateToTab('keywords')}
+              onNavigateToActivities={() => handleNavigateToTab('activities')}
+              onNavigateToReports={() => handleNavigateToTab('reports')}
+              onNavigateToInsights={() => handleNavigateToTab('insights')}
+              onNavigateToWebsites={() => handleNavigateToTab('websites')}
               onOpenPageDetail={item => setSelectedDecliningItem(item)}
             />
           )}
@@ -165,8 +224,8 @@ export function App() {
             <OptimizationPipelineView
               website={activeWebsite}
               onOpenPageDetail={item => setSelectedDecliningItem(item)}
-              onNavigateToCategoryRules={() => setActiveTab('category_rules')}
-              onNavigateToActivities={() => setActiveTab('activities')}
+              onNavigateToCategoryRules={() => handleNavigateToTab('category_rules')}
+              onNavigateToActivities={() => handleNavigateToTab('activities')}
             />
           )}
 
@@ -180,7 +239,7 @@ export function App() {
           {activeTab === 'all_pages' && activeWebsite && (
             <AllPagesView
               website={activeWebsite}
-              onOpenActivityPlanner={() => setActiveTab('activities')}
+              onOpenActivityPlanner={() => handleNavigateToTab('activities')}
             />
           )}
 
@@ -194,7 +253,7 @@ export function App() {
           {activeTab === 'insights' && activeWebsite && (
             <InsightsView
               website={activeWebsite}
-              onNavigateToActivities={() => setActiveTab('activities')}
+              onNavigateToActivities={() => handleNavigateToTab('activities')}
             />
           )}
 
@@ -237,7 +296,7 @@ export function App() {
           )}
 
           {(activeTab === 'deployment' || activeTab === 'code_package' || activeTab === 'installer') && (
-            <DeploymentView initialTab={activeTab === 'installer' ? 'installer' : 'package'} />
+            <DeploymentView initialTab={activeTab === 'installer' ? 'installer' : 'updates'} />
           )}
 
           {activeTab === 'settings' && (

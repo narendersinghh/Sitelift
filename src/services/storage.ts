@@ -17,7 +17,8 @@ import {
   PageIndexStatus,
   AppVersionState,
   ReleaseSnapshot,
-  GitHubReleaseInfo
+  GitHubReleaseInfo,
+  AuthUser
 } from '../types';
 
 import {
@@ -56,16 +57,6 @@ const STORAGE_KEYS = {
   AUTH_USER: 'sitelift_auth_user',
   VERSION_STATE: 'sitelift_version_state'
 };
-
-export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  role: 'admin';
-  loggedInAt?: string;
-  csrfToken?: string;
-  createdAt?: string;
-}
 
 class StorageService {
   private get<T>(key: string, fallback: T): T {
@@ -208,14 +199,20 @@ class StorageService {
 
   // Auth User
   public getAuthUser(): AuthUser | null {
-    return this.get<AuthUser | null>(STORAGE_KEYS.AUTH_USER, {
-      id: 'usr-1',
-      email: 'admin@sitelift.local',
-      name: 'Primary Administrator',
-      role: 'admin',
-      loggedInAt: new Date().toISOString(),
-      csrfToken: 'csrf_demo_token_123'
-    });
+    const user = this.get<AuthUser | null>(STORAGE_KEYS.AUTH_USER, null);
+    if (!user) return null;
+
+    // Check session expiration (if not "keep logged in")
+    if (user.expiresAt) {
+      const expiryTimestamp = new Date(user.expiresAt).getTime();
+      if (!isNaN(expiryTimestamp) && Date.now() > expiryTimestamp) {
+        // Session expired (e.g. 24 hours without "keep logged in")
+        this.logout();
+        return null;
+      }
+    }
+
+    return user;
   }
 
   public setAuthUser(user: AuthUser | null): void {
@@ -802,26 +799,10 @@ class StorageService {
     const defaultState: AppVersionState = {
       currentVersion: 'v1.2.0',
       currentCommit: '9df84a1',
-      lastCheckedAt: '2026-08-23T12:00:00Z',
-      githubRepo: 'nrsheoran/sitelift-seo-suite',
+      lastCheckedAt: new Date().toISOString(),
+      githubRepo: 'narendersinghh/Sitelift',
       releaseChannel: 'stable',
-      latestAvailableRelease: {
-        tag_name: 'v1.3.0',
-        name: 'Sitelift v1.3.0: Core Web Vitals Deep Inspector & Real-time SERP Crawler Turbo',
-        published_at: '2026-08-22T18:45:00Z',
-        body: '### What\'s New in v1.3.0\n- **Live Googlebot Simulator**: Instant CWV field inspection with Mobile & Desktop simulation.\n- **Atomic GitHub Auto-Updater**: Zero-downtime updates with automatic snapshot backups and 1-click rollback.\n- **Bright Data SERP Scraper V2**: High-concurrency query pipeline with zero IP rate limits.\n- **Enhanced Index Status Diagnostic**: Direct indexing request ping for discovered URLs.\n- **Security & Fixes**: Upgraded PDO MySQL connection pooling and hardened session tokens.',
-        html_url: 'https://github.com/nrsheoran/sitelift-seo-suite/releases/tag/v1.3.0',
-        prerelease: false,
-        zipball_url: 'https://api.github.com/repos/nrsheoran/sitelift-seo-suite/zipball/v1.3.0',
-        tarball_url: 'https://api.github.com/repos/nrsheoran/sitelift-seo-suite/tarball/v1.3.0',
-        assets: [
-          {
-            name: 'sitelift-v1.3.0-production.zip',
-            browser_download_url: 'https://github.com/nrsheoran/sitelift-seo-suite/releases/download/v1.3.0/sitelift-v1.3.0-production.zip',
-            size: 4194304
-          }
-        ]
-      },
+      latestAvailableRelease: null,
       snapshots: [
         {
           id: 'snap-v1.2.0-current',
@@ -850,25 +831,19 @@ class StorageService {
           schemaVersion: '2026_01_01_000001',
           isCurrent: false,
           canRollback: true
-        },
-        {
-          id: 'snap-v1.1.0-release',
-          version: 'v1.1.0',
-          releaseTag: 'v1.1.0',
-          commitHash: '2a88ef4',
-          createdAt: '2026-07-15T11:00:00Z',
-          notes: 'Initial Production Release: Self-hosted shared hosting package with cPanel cron automation',
-          type: 'manual_snapshot',
-          fileCount: 34,
-          archiveSize: '3.4 MB',
-          schemaVersion: '2026_01_01_000001',
-          isCurrent: false,
-          canRollback: true
         }
       ]
     };
 
-    return this.get<AppVersionState>(STORAGE_KEYS.VERSION_STATE, defaultState);
+    const state = this.get<AppVersionState>(STORAGE_KEYS.VERSION_STATE, defaultState);
+
+    // Sanitize repository and ensure it points to the official repo
+    if (state.githubRepo === 'nrsheoran/sitelift-seo-suite' || !state.githubRepo) {
+      state.githubRepo = 'narendersinghh/Sitelift';
+      this.saveVersionState(state);
+    }
+
+    return state;
   }
 
   public saveVersionState(state: AppVersionState): void {
