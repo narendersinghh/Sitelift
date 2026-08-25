@@ -54,9 +54,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
   };
 
   const [aiEnabled, setAiEnabled] = useState(existingAi.enabled ?? true);
-  const [aiProvider, setAiProvider] = useState<'gemini' | 'openai' | 'anthropic' | 'custom'>(existingAi.provider || 'gemini');
+  const [aiProvider, setAiProvider] = useState<'gemini' | 'openai' | 'anthropic' | 'openrouter' | 'custom'>(existingAi.provider || 'gemini');
   const [aiApiKey, setAiApiKey] = useState(existingAi.apiKey || '');
-  const [aiModel, setAiModel] = useState(existingAi.model || (existingAi.provider === 'gemini' ? 'gemini-2.5-flash' : 'gpt-4o-mini'));
+  const [aiModel, setAiModel] = useState(existingAi.model || (existingAi.provider === 'gemini' ? 'gemini-2.5-flash' : existingAi.provider === 'openrouter' ? 'openai/gpt-4o-mini' : 'gpt-4o-mini'));
   const [aiEndpoint, setAiEndpoint] = useState(existingAi.customEndpoint || '');
   const [aiTemperature, setAiTemperature] = useState(existingAi.temperature || 0.7);
 
@@ -67,7 +67,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
       enabled: aiEnabled,
       provider: aiProvider,
       apiKey: aiApiKey.trim(),
-      model: aiModel.trim() || (aiProvider === 'gemini' ? 'gemini-2.5-flash' : 'gpt-4o-mini'),
+      model: aiModel.trim() || (aiProvider === 'gemini' ? 'gemini-2.5-flash' : aiProvider === 'openrouter' ? 'openai/gpt-4o-mini' : 'gpt-4o-mini'),
       customEndpoint: aiEndpoint.trim(),
       temperature: Number(aiTemperature)
     };
@@ -109,6 +109,22 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
   };
 
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showClearDemoModal, setShowClearDemoModal] = useState(false);
+
+  // Clear demo data only (keeps all app configuration, API keys, OAuth, and any user-added websites/projects)
+  const confirmClearDemoData = () => {
+    const result = storage.clearDemoData();
+    setShowClearDemoModal(false);
+    setSavedMessage(
+      result.customWebsitesKept > 0
+        ? `Demo data removed! Kept ${result.customWebsitesKept} user project(s) and all app configuration.`
+        : 'Demo data removed! App is now in fresh state ready for your projects. All configurations were preserved.'
+    );
+    setTimeout(() => {
+      setSavedMessage('');
+      window.location.reload();
+    }, 1500);
+  };
 
   const confirmReset = () => {
     storage.resetToDefaults();
@@ -179,12 +195,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
                   const p = e.target.value as any;
                   setAiProvider(p);
                   if (p === 'gemini') setAiModel('gemini-2.5-flash');
+                  else if (p === 'openrouter') setAiModel('openai/gpt-4o-mini');
                   else if (p === 'openai') setAiModel('gpt-4o-mini');
                   else if (p === 'anthropic') setAiModel('claude-3-5-sonnet');
                 }}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
               >
                 <option value="gemini">Google Gemini API (Recommended)</option>
+                <option value="openrouter">OpenRouter (Access 100+ Models with 1 Key)</option>
                 <option value="openai">OpenAI (ChatGPT / GPT-4o)</option>
                 <option value="anthropic">Anthropic Claude</option>
                 <option value="custom">Custom / OpenAI-Compatible Proxy</option>
@@ -197,19 +215,33 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
                 type="text"
                 value={aiModel}
                 onChange={e => setAiModel(e.target.value)}
-                placeholder="e.g. gemini-2.5-flash or gpt-4o-mini"
+                placeholder={
+                  aiProvider === 'openrouter'
+                    ? 'e.g. openai/gpt-4o-mini, anthropic/claude-3.5-sonnet, google/gemini-2.5-flash'
+                    : aiProvider === 'gemini'
+                    ? 'gemini-2.5-flash or gemini-1.5-pro'
+                    : 'gpt-4o-mini or claude-3-5-sonnet'
+                }
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1">AI API Key / Access Token</label>
+              <label className="block text-slate-700 font-bold mb-1">
+                {aiProvider === 'openrouter' ? 'OpenRouter API Key (sk-or-v1-...)' : 'AI API Key / Access Token'}
+              </label>
               <div className="relative">
                 <input
                   type={showApiKey ? 'text' : 'password'}
                   value={aiApiKey}
                   onChange={e => setAiApiKey(e.target.value)}
-                  placeholder="AIzaSy... or sk-..."
+                  placeholder={
+                    aiProvider === 'openrouter'
+                      ? 'sk-or-v1-...'
+                      : aiProvider === 'gemini'
+                      ? 'AIzaSy...'
+                      : 'sk-...'
+                  }
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono focus:bg-white focus:border-blue-500 focus:outline-none pr-10"
                 />
                 <button
@@ -220,6 +252,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
                   {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
+              {aiProvider === 'openrouter' && (
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Get your unified API key from <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-blue-600 underline font-medium">openrouter.ai/keys</a>. Supports GPT-4o, Claude 3.5, Gemini 2.5, DeepSeek, and Llama 3 models.
+                </p>
+              )}
             </div>
 
             <div>
@@ -228,7 +265,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
                 type="text"
                 value={aiEndpoint}
                 onChange={e => setAiEndpoint(e.target.value)}
-                placeholder="https://api.openai.com/v1/chat/completions"
+                placeholder={
+                  aiProvider === 'openrouter'
+                    ? 'https://openrouter.ai/api/v1/chat/completions (Default)'
+                    : 'https://api.openai.com/v1/chat/completions'
+                }
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono focus:bg-white focus:border-blue-500 focus:outline-none"
               />
             </div>
@@ -496,15 +537,28 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
         </div>
 
         {/* Save & Reset Actions */}
-        <div className="flex items-center justify-between pt-2">
-          <button
-            type="button"
-            onClick={() => setShowResetModal(true)}
-            className="px-4 py-2 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-slate-600 hover:text-rose-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>Reset Demo DB</span>
-          </button>
+        <div className="flex items-center justify-between pt-2 flex-wrap gap-3">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setShowClearDemoModal(true)}
+              className="px-4 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs"
+              title="Delete all initial demo/sample data to start fresh, while keeping your app settings, API keys, and custom added projects"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-amber-700" />
+              <span>Delete Demo Data</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowResetModal(true)}
+              className="px-3.5 py-2 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-slate-500 hover:text-rose-700 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 shadow-xs"
+              title="Reset everything back to factory demo state"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Reset to Demo DB</span>
+            </button>
+          </div>
 
           <button
             type="submit"
@@ -516,16 +570,65 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
 
       </form>
 
+      {/* Clear Demo Data Confirmation Modal */}
+      {showClearDemoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 shadow-xl space-y-4">
+            <div className="flex items-center gap-2 text-amber-800">
+              <div className="p-2 bg-amber-100 rounded-xl">
+                <Trash2 className="w-5 h-5 text-amber-700" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">
+                  Delete Demo Data & Start Fresh?
+                </h3>
+                <p className="text-[11px] text-amber-800 font-medium">
+                  Preserves your settings, keys, and user-added websites.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+              <p className="font-semibold text-slate-800">This action will:</p>
+              <ul className="list-disc pl-4 space-y-1 text-[11px]">
+                <li>Remove demo sample websites (<em>Acme Corp, BrewCraft, NorthStar</em>) and their mock metrics.</li>
+                <li>Remove demo keyword snapshots, mock GSC logs, sample decline history, and sample activity tasks.</li>
+                <li><strong className="text-emerald-700">KEEP all your application settings, API keys (OpenRouter, Gemini, Google OAuth, Bright Data), cron tokens, and user logins intact.</strong></li>
+                <li><strong className="text-emerald-700">KEEP any custom websites and projects you have added.</strong></li>
+              </ul>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowClearDemoModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmClearDemoData}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Demo Data Now</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Reset Database Confirmation Modal */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 shadow-xl space-y-4">
             <h3 className="text-sm font-bold text-rose-700 uppercase tracking-wider flex items-center gap-2">
-              <Trash2 className="w-4 h-4" />
-              Reset All Data to Defaults?
+              <RefreshCw className="w-4 h-4" />
+              Reset All Data to Demo Defaults?
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              This will restore all default metrics, decline history, tracked keywords, and activity logs. Any custom changes will be reset.
+              This will restore the original demo websites, demo metrics, and reset custom configuration to factory demo state.
             </p>
             <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
               <button
@@ -540,7 +643,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onRefresh }) => {
                 onClick={confirmReset}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all"
               >
-                Reset Database
+                Reset to Demo State
               </button>
             </div>
           </div>

@@ -26,6 +26,7 @@ export interface AiReportSummaryParams {
 
 /**
  * Executes AI API requests for Activity Planner task generation and Report narratives.
+ * Supports Google Gemini, OpenAI, OpenRouter, and custom OpenAI-compatible endpoints.
  * Raw metrics, positions, and logs remain 100% computed from GA4, GSC, and Bright Data APIs.
  */
 export class AiService {
@@ -36,7 +37,7 @@ export class AiService {
     const settings = storage.getSettings();
     const aiConfig = settings.aiSettings;
 
-    // If AI is not configured or disabled, return null so caller uses deterministic rules
+    // If AI is not configured or disabled, return empty so caller uses deterministic rules
     if (!aiConfig || !aiConfig.enabled || !aiConfig.apiKey.trim()) {
       return [];
     }
@@ -106,6 +107,29 @@ Respond in strict JSON format:
         if (!res.ok) throw new Error(`Gemini API returned status ${res.status}`);
         const data = await res.json();
         responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      } else if (aiConfig.provider === 'openrouter') {
+        const endpoint = aiConfig.customEndpoint?.trim() || 'https://openrouter.ai/api/v1/chat/completions';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${aiConfig.apiKey.trim()}`,
+            'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://sitelift.local',
+            'X-Title': 'Sitelift SEO Platform'
+          },
+          body: JSON.stringify({
+            model: aiConfig.model || 'openai/gpt-4o-mini',
+            messages: [
+              { role: 'system', content: 'You are an expert SEO strategist. Output only JSON array.' },
+              { role: 'user', content: prompt }
+            ],
+            temperature: aiConfig.temperature || 0.7
+          })
+        });
+
+        if (!res.ok) throw new Error(`OpenRouter API returned status ${res.status}`);
+        const data = await res.json();
+        responseText = data.choices?.[0]?.message?.content || '';
       } else if (aiConfig.provider === 'openai' || aiConfig.provider === 'custom') {
         const endpoint = aiConfig.customEndpoint?.trim() || 'https://api.openai.com/v1/chat/completions';
         const res = await fetch(endpoint, {
@@ -215,6 +239,29 @@ Respond in strict JSON format:
         if (!res.ok) throw new Error(`Gemini API returned status ${res.status}`);
         const data = await res.json();
         responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      } else if (aiConfig.provider === 'openrouter') {
+        const endpoint = aiConfig.customEndpoint?.trim() || 'https://openrouter.ai/api/v1/chat/completions';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${aiConfig.apiKey.trim()}`,
+            'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://sitelift.local',
+            'X-Title': 'Sitelift SEO Platform'
+          },
+          body: JSON.stringify({
+            model: aiConfig.model || 'openai/gpt-4o-mini',
+            messages: [
+              { role: 'system', content: 'You are an executive SEO reporting agent. Output only JSON object.' },
+              { role: 'user', content: prompt }
+            ],
+            temperature: aiConfig.temperature || 0.7
+          })
+        });
+
+        if (!res.ok) throw new Error(`OpenRouter API returned status ${res.status}`);
+        const data = await res.json();
+        responseText = data.choices?.[0]?.message?.content || '';
       } else if (aiConfig.provider === 'openai' || aiConfig.provider === 'custom') {
         const endpoint = aiConfig.customEndpoint?.trim() || 'https://api.openai.com/v1/chat/completions';
         const res = await fetch(endpoint, {

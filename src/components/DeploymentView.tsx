@@ -34,7 +34,7 @@ import {
   FileText,
   Search
 } from 'lucide-react';
-import { generateSiteliftZip } from '../services/phpZipGenerator';
+import { generateSiteliftZip, downloadSiteliftZip } from '../services/phpZipGenerator';
 import { storage } from '../services/storage';
 import { AppVersionState, ReleaseSnapshot, GitHubReleaseInfo } from '../types';
 
@@ -326,9 +326,9 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
     setIsZipping(true);
     setDownloadError('');
     try {
-      await generateSiteliftZip();
+      await downloadSiteliftZip(`sitelift-${versionState.currentVersion}-production.zip`);
       setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 4000);
+      setTimeout(() => setDownloadSuccess(false), 5000);
     } catch (e) {
       console.error(e);
       setDownloadError('Failed to generate ZIP package. Please try again.');
@@ -409,15 +409,6 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
             >
               <History className="w-3.5 h-3.5 text-purple-600" />
               <span>Create Backup Snapshot</span>
-            </button>
-
-            <button
-              onClick={handleDownload}
-              disabled={isZipping}
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-xs font-bold text-white shadow-xs transition-all disabled:opacity-50"
-            >
-              <Download className={`w-3.5 h-3.5 ${isZipping ? 'animate-bounce' : ''}`} />
-              <span>{isZipping ? 'Generating ZIP...' : `Download ${versionState.currentVersion} ZIP`}</span>
             </button>
           </div>
         </div>
@@ -785,11 +776,42 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
       {activeTab === 'package' && (
         <div className="space-y-6 animate-in fade-in duration-150">
           
+          {/* Prominent Production Package Download Card */}
+          <div className="p-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-slate-50 border-2 border-blue-200 rounded-2xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-600 text-white">
+                  Turnkey Package
+                </span>
+                <span className="text-xs font-mono font-bold text-slate-700">
+                  sitelift-{versionState.currentVersion}-production.zip
+                </span>
+              </div>
+              <h3 className="text-base font-extrabold text-slate-900">
+                Self-Hosted Production Deployment ZIP
+              </h3>
+              <p className="text-xs text-slate-600 max-w-xl">
+                Ready to unzip directly into cPanel <code>public_html</code> or VPS web root. Includes web installer, MySQL migrations, zero-downtime auto-updater, and Apache rewrite rules.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={handleDownload}
+                disabled={isZipping}
+                className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs flex items-center gap-2 shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+              >
+                <Download className={`w-4 h-4 ${isZipping ? 'animate-bounce' : ''}`} />
+                <span>{isZipping ? 'Generating Production ZIP...' : `Download ${versionState.currentVersion} ZIP Package`}</span>
+              </button>
+            </div>
+          </div>
+
           {downloadSuccess && (
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-800 flex items-center gap-3 shadow-xs animate-in fade-in">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <div>
-                <strong>Download Complete!</strong> You have downloaded <code>sitelift-{versionState.currentVersion}.zip</code>. Upload and unzip to your shared hosting <code>public_html</code>, then navigate to <code>/install</code> in your browser.
+                <strong>Download Initiated!</strong> Your browser has started downloading <code>sitelift-{versionState.currentVersion}-production.zip</code>. Upload and unzip to your web host's <code>public_html</code>, then open <code>/install</code> in your browser.
               </div>
             </div>
           )}
@@ -1044,7 +1066,7 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                 </div>
                 <div>
                   <h2 className="text-base font-bold text-slate-900">Sitelift Web Installer Wizard</h2>
-                  <p className="text-xs text-slate-500">Step {step} of 4: Self-Hosted Shared Hosting Setup</p>
+                  <p className="text-xs text-slate-500">Step {step} of 4: Self-Hosted Production Setup</p>
                 </div>
               </div>
 
@@ -1055,10 +1077,10 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                     key={s}
                     className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
                       s === step
-                        ? 'bg-blue-600 text-white shadow-xs'
+                        ? 'bg-blue-600 text-white shadow-xs ring-2 ring-blue-200'
                         : s < step
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                        : 'bg-slate-100 text-slate-400'
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-slate-100 text-slate-400 border border-slate-200'
                     }`}
                   >
                     {s < step ? '✓' : s}
@@ -1070,9 +1092,15 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
             {/* Step 1: System Requirements */}
             {step === 1 && (
               <div className="p-6 space-y-4">
-                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  PHP Environment & Extension Checks
+                <div>
+                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    PHP Environment & Extension Checks
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Validating that your server satisfies all requirements for self-hosted execution.
+                  </p>
                 </div>
+
                 <div className="divide-y divide-slate-100 rounded-xl border border-slate-200 overflow-hidden bg-slate-50">
                   {requirements.map((req, idx) => (
                     <div key={idx} className="p-3 flex items-center justify-between text-xs">
@@ -1100,8 +1128,45 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
             {/* Step 2: Database Connection */}
             {step === 2 && (
               <div className="p-6 space-y-4">
-                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  MySQL 8 / MariaDB Database Credentials
+                <div>
+                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    MySQL 8 / MariaDB Database Credentials
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Enter your database credentials or select a quick hosting preset.
+                  </p>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-bold text-slate-500">Presets:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDbHost('localhost');
+                      setDbPort('3306');
+                      setDbName('cpaneluser_sitelift');
+                      setDbUser('cpaneluser_db');
+                      setDbPrefix('sl_');
+                    }}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 transition"
+                  >
+                    cPanel / Shared Host
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDbHost('127.0.0.1');
+                      setDbPort('3306');
+                      setDbName('sitelift');
+                      setDbUser('root');
+                      setDbPass('');
+                      setDbPrefix('sl_');
+                    }}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 transition"
+                  >
+                    Localhost (XAMPP)
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -1110,7 +1175,7 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                     <input
                       type="text"
                       value={dbHost}
-                      onChange={e => setDbHost(e.target.value)}
+                      onChange={e => { setDbHost(e.target.value); setDbConnected(false); }}
                       className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none font-mono"
                     />
                   </div>
@@ -1131,7 +1196,7 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                     <input
                       type="text"
                       value={dbName}
-                      onChange={e => setDbName(e.target.value)}
+                      onChange={e => { setDbName(e.target.value); setDbConnected(false); }}
                       className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none font-mono"
                     />
                   </div>
@@ -1152,7 +1217,7 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                     <input
                       type="text"
                       value={dbUser}
-                      onChange={e => setDbUser(e.target.value)}
+                      onChange={e => { setDbUser(e.target.value); setDbConnected(false); }}
                       className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none font-mono"
                     />
                   </div>
@@ -1161,7 +1226,7 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                     <input
                       type="password"
                       value={dbPass}
-                      onChange={e => setDbPass(e.target.value)}
+                      onChange={e => { setDbPass(e.target.value); setDbConnected(false); }}
                       className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none font-mono"
                     />
                   </div>
@@ -1172,10 +1237,14 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                     type="button"
                     onClick={handleTestDatabase}
                     disabled={isTestingDb}
-                    className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-blue-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5"
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                      dbConnected
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
+                    }`}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isTestingDb ? 'animate-spin' : ''}`} />
-                    <span>{dbConnected ? 'Database Connected!' : 'Test PDO Connection'}</span>
+                    <span>{isTestingDb ? 'Testing Connection...' : dbConnected ? '✓ Connection Verified' : 'Test PDO Connection'}</span>
                   </button>
 
                   <div className="flex gap-2">
@@ -1200,8 +1269,13 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
             {/* Step 3: Admin Account */}
             {step === 3 && (
               <div className="p-6 space-y-4">
-                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Create Master SEO Administrator Account
+                <div>
+                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    Create Master SEO Administrator Account
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Set up your primary login credentials for dashboard administration.
+                  </p>
                 </div>
 
                 <div>
@@ -1266,11 +1340,11 @@ export const DeploymentView: React.FC<DeploymentViewProps> = ({ initialTab = 'up
                   </p>
                 </div>
 
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="font-bold text-slate-900">Security Requirement:</div>
-                  <p className="text-slate-600 text-[11px]">
-                    Delete or restrict permissions on <code>/public/install</code> directory on your server to prevent reinstallation.
-                  </p>
+                <div className="p-4 bg-slate-900 text-slate-100 rounded-xl space-y-1.5 text-xs font-mono">
+                  <div className="text-slate-400 font-sans text-xs">cPanel / Server Cron Job:</div>
+                  <div className="text-emerald-400 text-[11px] select-all break-all">
+                    * * * * * php /home/username/public_html/cron.php --token=sl_cron_9f8e7d6c5b4a &gt;/dev/null 2&gt;&amp;1
+                  </div>
                 </div>
 
                 {installerComplete && (

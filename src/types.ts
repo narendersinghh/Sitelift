@@ -587,7 +587,7 @@ export interface MonthlyReport {
 
 export interface AiSettings {
   enabled: boolean;
-  provider: 'gemini' | 'openai' | 'anthropic' | 'custom';
+  provider: 'gemini' | 'openai' | 'anthropic' | 'openrouter' | 'custom';
   apiKey: string;
   model: string;
   customEndpoint?: string;

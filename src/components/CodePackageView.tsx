@@ -13,7 +13,7 @@ import {
   ChevronRight,
   FileText
 } from 'lucide-react';
-import { generateSiteliftZip } from '../services/phpZipGenerator';
+import { generateSiteliftZip, downloadSiteliftZip } from '../services/phpZipGenerator';
 
 export const CodePackageView: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<string>('public/install/index.php');
@@ -65,9 +65,9 @@ export const CodePackageView: React.FC = () => {
     setIsZipping(true);
     setDownloadError('');
     try {
-      await generateSiteliftZip();
+      await downloadSiteliftZip('sitelift-v1.2.0-production.zip');
       setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 4000);
+      setTimeout(() => setDownloadSuccess(false), 5000);
     } catch (e) {
       console.error(e);
       setDownloadError('Failed to generate ZIP package. Please try again.');

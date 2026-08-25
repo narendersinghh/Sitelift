@@ -120,6 +120,92 @@ class StorageService {
     });
   }
 
+  /**
+   * Cleans only demo/mock data to start as a fresh application.
+   * - Retains all existing app configuration, API keys, OAuth credentials, global settings, and auth users.
+   * - Retains user-created custom websites/projects (removes default mock demo properties 'site-acme', 'site-brew', 'site-northstar').
+   * - If no custom website remains, keeps the active website list empty or ready for the user to add new projects.
+   * - Clears demo keywords, mock page metrics, mock GSC search metrics, mock rank snapshots, mock insights, mock activities, and mock reports associated with demo sites.
+   */
+  public clearDemoData(): { customWebsitesKept: number } {
+    const demoSiteIds = new Set(['site-acme', 'site-brew', 'site-northstar']);
+    
+    // 1. Filter out only demo websites, preserving any added custom websites/projects
+    const allWebsites = this.getWebsites();
+    const customWebsites = allWebsites.filter(w => !demoSiteIds.has(w.id));
+    this.set(STORAGE_KEYS.WEBSITES, customWebsites);
+
+    // Update active website ID if the current active was a demo site
+    const currentActiveId = this.getActiveWebsiteId();
+    if (demoSiteIds.has(currentActiveId)) {
+      if (customWebsites.length > 0) {
+        this.setActiveWebsiteId(customWebsites[0].id);
+      } else {
+        this.setActiveWebsiteId('');
+      }
+    }
+
+    // 2. Clean GA & GSC connections for demo sites
+    const gaConns = this.getGaConnections();
+    const gscConns = this.getGscConnections();
+    const filteredGa: Record<string, GaConnection> = {};
+    const filteredGsc: Record<string, GscConnection> = {};
+
+    Object.keys(gaConns).forEach(siteId => {
+      if (!demoSiteIds.has(siteId)) {
+        filteredGa[siteId] = gaConns[siteId];
+      }
+    });
+
+    Object.keys(gscConns).forEach(siteId => {
+      if (!demoSiteIds.has(siteId)) {
+        filteredGsc[siteId] = gscConns[siteId];
+      }
+    });
+
+    this.set(STORAGE_KEYS.GA_CONNECTIONS, filteredGa);
+    this.set(STORAGE_KEYS.GSC_CONNECTIONS, filteredGsc);
+
+    // 3. Clean Category Rules for demo sites
+    const allRules = this.get<CategoryRule[]>(STORAGE_KEYS.CATEGORY_RULES, []);
+    const customRules = allRules.filter(r => !demoSiteIds.has(r.websiteId));
+    this.set(STORAGE_KEYS.CATEGORY_RULES, customRules);
+
+    // 4. Clean Keywords & Rank Snapshots for demo sites
+    const allKeywords = this.get<Keyword[]>(STORAGE_KEYS.KEYWORDS, []);
+    const customKeywords = allKeywords.filter(k => !demoSiteIds.has(k.websiteId));
+    this.set(STORAGE_KEYS.KEYWORDS, customKeywords);
+
+    const customKeywordIds = new Set(customKeywords.map(k => k.id));
+    const allSnapshots = this.get<KeywordRankSnapshot[]>(STORAGE_KEYS.RANK_SNAPSHOTS, []);
+    const customSnapshots = allSnapshots.filter(s => customKeywordIds.has(s.keywordId));
+    this.set(STORAGE_KEYS.RANK_SNAPSHOTS, customSnapshots);
+
+    // 5. Clean Page Metrics & GSC Metrics for demo sites
+    const allPageMetrics = this.get<PageMetricDaily[]>(STORAGE_KEYS.PAGE_METRICS, []);
+    const customPageMetrics = allPageMetrics.filter(m => !demoSiteIds.has(m.websiteId));
+    this.set(STORAGE_KEYS.PAGE_METRICS, customPageMetrics);
+
+    const allGscMetrics = this.get<GscQueryMetricDaily[]>(STORAGE_KEYS.GSC_METRICS, []);
+    const customGscMetrics = allGscMetrics.filter(m => !demoSiteIds.has(m.websiteId));
+    this.set(STORAGE_KEYS.GSC_METRICS, customGscMetrics);
+
+    // 6. Clean Insights, Activities, Reports, and Sync Jobs for demo sites
+    const allInsights = this.get<Insight[]>(STORAGE_KEYS.INSIGHTS, []);
+    this.set(STORAGE_KEYS.INSIGHTS, allInsights.filter(i => !demoSiteIds.has(i.websiteId)));
+
+    const allActivities = this.get<Activity[]>(STORAGE_KEYS.ACTIVITIES, []);
+    this.set(STORAGE_KEYS.ACTIVITIES, allActivities.filter(a => !demoSiteIds.has(a.websiteId)));
+
+    const allReports = this.get<MonthlyReport[]>(STORAGE_KEYS.MONTHLY_REPORTS, []);
+    this.set(STORAGE_KEYS.MONTHLY_REPORTS, allReports.filter(r => !demoSiteIds.has(r.websiteId)));
+
+    const allSyncJobs = this.get<SyncJob[]>(STORAGE_KEYS.SYNC_JOBS, []);
+    this.set(STORAGE_KEYS.SYNC_JOBS, allSyncJobs.filter(j => !demoSiteIds.has(j.websiteId)));
+
+    return { customWebsitesKept: customWebsites.length };
+  }
+
   // Auth User
   public getAuthUser(): AuthUser | null {
     return this.get<AuthUser | null>(STORAGE_KEYS.AUTH_USER, {

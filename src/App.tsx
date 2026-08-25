@@ -123,6 +123,29 @@ export function App() {
 
         {/* Main View Container */}
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          {/* If no website exists yet and user is on a website-specific tab */}
+          {!activeWebsite && !['websites', 'settings', 'deployment', 'code_package', 'installer'].includes(activeTab) && (
+            <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center shadow-xs max-w-xl mx-auto space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                <Globe className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">No Website Connected Yet</h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  You are in clean fresh state. Add your first website property or client project to begin tracking SEO declines and keyword rankings.
+                </p>
+              </div>
+              <div>
+                <button
+                  onClick={() => setActiveTab('websites')}
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all"
+                >
+                  Add Website Project Now
+                </button>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'dashboard' && activeWebsite && (
             <DashboardView
               website={activeWebsite}
